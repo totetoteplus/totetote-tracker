@@ -287,7 +287,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月11日（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月12日 12:28（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -316,8 +316,6 @@
 // 過去年の応募期間データを今年のものとして誤って掲載しないよう、応募期間に記載の年が調査基準日と同じ年であることを確認する。
 // 注意: category:"onepiece" と category:"dragonball" の情報収集時は、プレミアムバンダイ（p-bandai.jp）の抽選販売も必ず検索対象に含めること。
 // 過去に一部商品（例：STORY BOOSTER 01のプレミアムバンダイ独自枠 item-1000255641）が見落とされていたため、恒久的なチェック項目とする。
-// category:"metal"（貴金属）について: 転売相場(resaleLow/High)は個体の中古市場価格ではなく、調査基準日時点の地金買取相場（K18・Pt850・K24など）から重量換算した「地金換算値」を用いる。
-// ジュエリーは工芸費・デザイン料が上乗せされるため、地金換算値は購入価格を下回るのが通常であり、その場合は「地金相場ベースでは利益なし」である旨をnoteに明記すること（虚偽の利益表示を避けるため）。
 const ITEMS = [
   {
     id:"pk-30th-futuristic-box",
@@ -975,101 +973,6 @@ const ITEMS = [
     saleType:"firstcome"
   },
   {
-    id:"metal-apita-k18-necklace-8men",
-    category:"metal", categoryLabel:"貴金属", icon:"⭕",
-    name:"18金 8面トリプル喜平ネックレス（20g・50cm）",
-    store:"アピタ／ピアゴ（店頭注文販売）",
-    period:"注文受付期間 8月1日(土)〜8月31日(月)・グループ全店合計限定40点・商品お渡し時に全額あと払い",
-    periodStart:"2026-08-01",
-    deadline:"2026-08-31",
-    status:"open", statusText:"受付中（〆切8/31）",
-    lotteryPrice:462000,
-    resaleLow:354960, resaleHigh:354960,
-    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
-    note:"1gあたり税抜¥21,000（税込¥23,100）、BOX付き。転売相場は2026年8月10日時点のK18買取相場（¥17,748/g、ゴールドプラザ調べ）から20g分を換算した地金換算値で、実際の中古ジュエリー市場価格とは異なります。この換算値は購入価格（税込¥462,000）を下回るため、地金相場ベースでは利益は見込めません。ユーザー提供のチラシ（2026年8月1日〜31日実施）が情報源です",
-    lotteryUrl:"https://www.apitashop.com/",
-    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
-    applyPeriod:"8月1日(土)〜8月31日(月)",
-    announceDate:null,
-    saleType:"firstcome"
-  },
-  {
-    id:"metal-apita-k18-necklace-12men",
-    category:"metal", categoryLabel:"貴金属", icon:"⭕",
-    name:"18金 12面トリプル喜平ネックレス（30.2g・50cm）",
-    store:"アピタ／ピアゴ（店頭注文販売）",
-    period:"注文受付期間 8月1日(土)〜8月31日(月)・グループ全店合計限定30点・商品お渡し時に全額あと払い",
-    periodStart:"2026-08-01",
-    deadline:"2026-08-31",
-    status:"open", statusText:"受付中（〆切8/31）",
-    lotteryPrice:697620,
-    resaleLow:536190, resaleHigh:536190,
-    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
-    note:"1gあたり税抜¥21,000（税込¥23,100）、BOX付き。転売相場は2026年8月10日時点のK18買取相場（¥17,748/g、ゴールドプラザ調べ）から30.2g分を換算した地金換算値で、実際の中古ジュエリー市場価格とは異なります。この換算値は購入価格（税込¥697,620）を下回るため、地金相場ベースでは利益は見込めません。ユーザー提供のチラシ（2026年8月1日〜31日実施）が情報源です",
-    lotteryUrl:"https://www.apitashop.com/",
-    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
-    applyPeriod:"8月1日(土)〜8月31日(月)",
-    announceDate:null,
-    saleType:"firstcome"
-  },
-  {
-    id:"metal-apita-k18-limited-lineup",
-    category:"metal", categoryLabel:"貴金属", icon:"⭕",
-    name:"18金 数量限定ジュエリー各種（ブレスレット／ネックレス）",
-    store:"アピタ／ピアゴ（店頭注文販売）",
-    period:"注文受付期間 8月1日(土)〜8月31日(月)・商品お渡し時に全額あと払い",
-    periodStart:"2026-08-01",
-    deadline:"2026-08-31",
-    status:"open", statusText:"受付中（〆切8/31）",
-    lotteryPrice:275880,
-    resaleLow:202327, resaleHigh:202327,
-    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
-    note:"1gあたり税抜¥22,000（税込¥24,200）のラインナップ。12面トリプル喜平ブレスレット5.1g(税込¥123,420・限定40点)／7.9g(税込¥191,180・限定50点)／12.9g(税込¥312,180・限定30点)、12面トリプル喜平ネックレス11.4g(税込¥275,880・限定40点、掲載価格として代表採用)／20.1g(税込¥486,420・限定50点)。転売相場は代表商品(11.4g)をK18買取相場（¥17,748/g）で地金換算した参考値で、いずれのサイズも購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
-    lotteryUrl:"https://www.apitashop.com/",
-    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
-    applyPeriod:"8月1日(土)〜8月31日(月)",
-    announceDate:null,
-    saleType:"firstcome"
-  },
-  {
-    id:"metal-apita-platinum-necklace",
-    category:"metal", categoryLabel:"貴金属", icon:"⭕",
-    name:"プラチナ（Pt850） 6面ダブル喜平ネックレス各種",
-    store:"アピタ／ピアゴ（店頭注文販売）",
-    period:"注文受付期間 8月1日(土)〜8月31日(月)・各サイズ限定50点・商品お渡し時に全額あと払い",
-    periodStart:"2026-08-01",
-    deadline:"2026-08-31",
-    status:"open", statusText:"受付中（〆切8/31）",
-    lotteryPrice:242000,
-    resaleLow:158940, resaleHigh:158940,
-    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
-    note:"1gあたり税抜¥11,000。10g・50cm(税込¥121,000)／20g・50cm(税込¥242,000・掲載価格として代表採用)／30g・50cm(税込¥363,000)の3サイズ、各限定50点。転売相場は代表商品(20g)を2026年8月10〜11日時点のPt850買取相場（¥7,947/g、ゴールドプラザ調べ）で地金換算した参考値で、購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
-    lotteryUrl:"https://www.apitashop.com/",
-    sourceUrl:"https://goldplaza.jp/gold/platinum/pt850",
-    applyPeriod:"8月1日(土)〜8月31日(月)",
-    announceDate:null,
-    saleType:"firstcome"
-  },
-  {
-    id:"metal-apita-puregold-ingot",
-    category:"metal", categoryLabel:"貴金属", icon:"⭕",
-    name:"純金（FINEGOLD 999.9） インゴット／ペンダントトップ各種",
-    store:"アピタ／ピアゴ（店頭注文販売）",
-    period:"注文受付期間 8月1日(土)〜8月31日(月)・商品お渡し時に全額あと払い",
-    periodStart:"2026-08-01",
-    deadline:"2026-08-31",
-    status:"open", statusText:"受付中（〆切8/31）",
-    lotteryPrice:99000,
-    resaleLow:45110, resaleHigh:45110,
-    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリー加工費・デザイン料は含まない参考値）",
-    note:"1gあたり税抜¥31,000。純金インゴットペンダントトップ2gリバティー(税込¥99,000・掲載価格として代表採用、限定枚数はチラシ内で判読困難のため不明)のほか、50gインゴットバー(税込¥1,705,000)、5g・10gリバティーペンダントトップ等も掲載。転売相場は代表商品(2g)を2026年8月11日時点のK24金価格（¥22,555/g、田中貴金属調べ）で地金換算した参考値で、購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
-    lotteryUrl:"https://www.apitashop.com/",
-    sourceUrl:"https://gold.tanaka.co.jp/commodity/souba/d-gold.php",
-    applyPeriod:"8月1日(土)〜8月31日(月)",
-    announceDate:null,
-    saleType:"firstcome"
-  },
-  {
     id:"livepocket-pokemon-30th",
     category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
     name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」",
@@ -1328,8 +1231,7 @@ const CATEGORIES = [
   {key:"nike", label:"Nike", icon:"⚪"},
   {key:"ichibankuji", label:"一番くじ", icon:"🟢"},
   {key:"chiikawa", label:"ちいかわ", icon:"🟤"},
-  {key:"livepocket", label:"LivePocket", icon:"🔘"},
-  {key:"metal", label:"貴金属", icon:"⭕"}
+  {key:"livepocket", label:"LivePocket", icon:"🔘"}
 ];
 
 let activeCats = new Set();
