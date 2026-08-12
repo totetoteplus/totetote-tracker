@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>とてとてtracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#151a2e;
+    --board-deep:#0d1120;
+    --panel:#1c2340;
+    --ticket:#f4ead2;
+    --ticket-shadow:#d8cba8;
+    --amber:#e8a33d;
+    --amber-deep:#c97f1f;
+    --ink:#f4ead2;
+    --ink-dim:#9aa3c4;
+    --line:#31396a;
+    --ok:#2f8f4e;
+    --ok-deep:#1f5f34;
+    --open-blue:#156bb0;
+    --warn:#c97f1f;
+    --closed:#4a4f6e;
+    --unknown:#3c4470;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--board-deep);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(95,184,122,0.06), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(232,163,61,0.05), transparent 40%);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .app{max-width:1180px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column;}
+
+  .topband{
+    padding:22px 28px 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:1px;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-weight:900;
+    font-size:21px;
+    letter-spacing:.04em;
+    color:var(--ticket);
+  }
+  .brand .plus{color:var(--amber);}
+  .brand .tracker{
+    margin-left:8px;
+    font-weight:500;
+    font-size:12px;
+    letter-spacing:.22em;
+    color:var(--ink-dim);
+  }
+  .updated{font-size:12px; color:var(--ink-dim); letter-spacing:.03em;}
+
+  .notice{
+    margin:14px 28px 0;
+    background:rgba(232,163,61,0.08);
+    border:1px dashed var(--amber-deep);
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:12px;
+    line-height:1.8;
+    color:var(--ink-dim);
+  }
+  .notice b{color:var(--amber);}
+
+  .toolbar{
+    padding:16px 28px 6px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .cat-chips{display:flex; gap:6px; flex-wrap:wrap;}
+  .chip{
+    padding:6px 12px;
+    border-radius:16px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink-dim);
+    font-size:12px;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .chip:hover{color:var(--ticket);}
+  .chip.active{background:rgba(232,163,61,0.15); border-color:var(--amber-deep); color:var(--amber);}
+
+  .result-count{
+    margin-left:auto;
+    font-size:11.5px;
+    color:var(--ink-dim);
+  }
+
+  .panel{padding:10px 28px 60px;}
+
+  .tickets{display:flex; flex-direction:column; gap:6px;}
+  .ticket-wrap{display:flex; flex-direction:column; gap:0;}
+
+  .ticket{
+    display:flex;
+    align-items:stretch;
+    background:var(--ticket);
+    color:#241d0f;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 3px 8px rgba(0,0,0,0.2);
+    position:relative;
+  }
+  .ticket::before{
+    content:"";
+    position:absolute;
+    left:96px;
+    top:0; bottom:0;
+    width:0;
+    border-left:2px dashed var(--ticket-shadow);
+  }
+  .ticket .stub{
+    width:96px;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:5px 6px;
+    text-align:center;
+  }
+  .stub.status-open{background:var(--open-blue); color:#eaf2ff;}
+  .stub.status-soon{background:var(--warn); color:#2c1c04;}
+  .stub.status-closed{background:var(--closed); color:#c7cce6;}
+  .stub.status-unknown{background:var(--unknown); color:#c7cce6;}
+
+  .stub .status-value{font-family:'Shippori Mincho', serif; font-weight:700; font-size:13px; line-height:1.25;}
+
+  .ticket .info{
+    padding:7px 16px 7px 20px;
+    flex:1;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    column-gap:16px;
+    row-gap:2px;
+  }
+  .ticket .tname{
+    font-family:'Shippori Mincho', serif;
+    font-weight:700;
+    font-size:13.5px;
+    line-height:1.3;
+    flex-basis:100%;
+  }
+  .badges{display:flex; gap:5px; flex-wrap:wrap; align-items:center;}
+  .badge{
+    font-size:9.5px;
+    padding:1px 8px;
+    border-radius:11px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .badge.cat{background:#e4d9b8; color:#4a3f28;}
+  .badge.date{background:#dfe6f5; color:#2c3d63;}
+  .badge.conf-high{background:#d4ecd9; color:#1f5f34;}
+  .badge.conf-mid{background:#f3e3c2; color:#8a5a12;}
+  .badge.conf-low{background:#ecd4d4; color:#7a3030;}
+
+  .ticket .meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:3px 14px;
+    font-size:11px;
+    color:#4a3f28;
+  }
+  .ticket .meta b{color:#241d0f;}
+  .links{display:flex; gap:12px; flex-wrap:wrap;}
+  .ticket .src{
+    display:inline-block;
+    font-size:10.5px;
+    color:#7a5b1a;
+    text-decoration:none;
+    border-bottom:1px solid #c9a35c;
+    white-space:nowrap;
+  }
+  .ticket .src:hover{color:#4a3f28;}
+  .ticket .src.lottery{color:#1f5f34; border-bottom-color:#5fb87a; font-weight:700;}
+  .ticket .src.lottery:hover{color:#173a1f;}
+  .ticket .note{font-size:10.5px; color:#6b5a2e; flex-basis:100%;}
+
+  .ticket .actions{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    border-left:1px solid var(--ticket-shadow);
+  }
+  .tweet-btn{
+    background:#241d0f;
+    color:#f4ead2;
+    border:none;
+    border-radius:14px;
+    padding:7px 13px;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.15s ease;
+  }
+  .tweet-btn:hover{background:#3a2f18;}
+  .tweet-btn.active{background:var(--ok-deep); color:#eafff0;}
+
+  .tweet-panel{
+    margin:4px 0 2px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    display:none;
+    flex-direction:column;
+    gap:8px;
+  }
+  .tweet-panel.open{display:flex;}
+  .tweet-text{
+    width:100%;
+    min-height:160px;
+    resize:vertical;
+    background:var(--board-deep);
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:10px 12px;
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    font-size:12.5px;
+    line-height:1.75;
+    white-space:pre-wrap;
+  }
+  .tweet-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  .tweet-actions button, .tweet-actions .tw-post{
+    font-size:11.5px;
+    padding:6px 14px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .tweet-actions button:hover{border-color:var(--amber-deep); color:var(--amber);}
+  .tweet-actions .tw-post{background:#1d9bf0; border-color:#1d9bf0; color:#fff; font-weight:700;}
+  .tweet-actions .tw-post:hover{background:#1a8cd8;}
+  .tweet-hint{font-size:10.5px; color:var(--ink-dim);}
+
+  .empty{
+    color:var(--ink-dim);
+    font-size:13px;
+    padding:40px 0;
+    text-align:center;
+    border:1px dashed var(--line);
+    border-radius:10px;
+  }
+
+  @media (max-width:720px){
+    .toolbar{padding:12px 16px 4px;}
+    .panel{padding:10px 16px 40px;}
+    .notice{margin:12px 16px 0;}
+    .ticket{flex-direction:column;}
+    .ticket .stub{width:100%; flex-direction:row; padding:6px 14px; gap:8px; justify-content:flex-start;}
+    .ticket .actions{width:100%; border-left:none; border-top:1px solid var(--ticket-shadow); padding:8px 14px; justify-content:flex-end;}
+    .ticket::before{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topband">
+    <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
+    <div class="updated">最終更新：2026年8月11日（Web検索による手動収集・状況は変動します）</div>
+  </div>
+
+  <div class="notice">
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月11日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。右端の「𝕏文章」ボタンで、Xに投稿できる告知文を自動生成できます（@sedokoX さんの投稿スタイルを参考にしたフォーマットです）。期間・当選発表が未確認の項目は「未定（抽選ページでご確認ください）」と表示されますので、投稿前に必ず抽選ページで実際の情報をご確認・補完してください。
+  </div>
+
+  <div class="toolbar">
+    <div class="cat-chips" id="chips"></div>
+    <div class="result-count" id="count"></div>
+  </div>
+
+  <main class="panel" id="panel"></main>
+
+</div>
+
+<script>
+// dataStatus: "confirmed" = 実際の転売相場データあり / "reference" = 過去シリーズ実績・不確実な情報源による参考値 / "insufficient" = 相場データなし
+// status: "open"（受付中） / "soon"（受付前） / "closed"（受付終了） / "unknown"（要確認・不定期）
+// saleType: "lottery"（抽選販売） / "firstcome"（先着販売・くじ販売など） / "backorder"（受注販売・受注再販売）
+// periodStart: 抽選/応募（または先着・受注販売の場合は受付）の開始日（判明分のみ ISO 形式）。開始日が特定できない商品は null とし、一覧の末尾に表示。
+// deadline: status:"open" の商品の締切日（ISO形式、判明分のみ）。並び替えの「受付中(期限の近い順)」に使用。
+// closedOn: status:"closed" の商品が受付終了した日（ISO形式）。この日から7日（1週間）以上経過すると一覧から自動的に非表示になる。
+// lotteryUrl: 抽選応募・公式告知ページ　/　sourceUrl: 転売相場などの価格情報ソース（ある場合のみ）
+// applyPeriod / announceDate: 既存の period テキストから判明している範囲のみ抽出。未確認の項目は null（生成文では「未定」表示）
+// 注意: データ追加・更新時は必ず西暦を確認すること。同じ商品名でも年をまたいで実施される催事（干支グッズ等）があり、
+// 過去年の応募期間データを今年のものとして誤って掲載しないよう、応募期間に記載の年が調査基準日と同じ年であることを確認する。
+// 注意: category:"onepiece" と category:"dragonball" の情報収集時は、プレミアムバンダイ（p-bandai.jp）の抽選販売も必ず検索対象に含めること。
+// 過去に一部商品（例：STORY BOOSTER 01のプレミアムバンダイ独自枠 item-1000255641）が見落とされていたため、恒久的なチェック項目とする。
+// category:"metal"（貴金属）について: 転売相場(resaleLow/High)は個体の中古市場価格ではなく、調査基準日時点の地金買取相場（K18・Pt850・K24など）から重量換算した「地金換算値」を用いる。
+// ジュエリーは工芸費・デザイン料が上乗せされるため、地金換算値は購入価格を下回るのが通常であり、その場合は「地金相場ベースでは利益なし」である旨をnoteに明記すること（虚偽の利益表示を避けるため）。
+const ITEMS = [
+  {
+    id:"pk-30th-futuristic-box",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"30th CELEBRATION FUTURISTIC BOX",
+    store:"ポケモンセンターオンライン",
+    period:"応募期間 8月10日(月)12:00〜8月14日(金)16:59",
+    periodStart:"2026-08-10",
+    deadline:"2026-08-14",
+    status:"open", statusText:"受付中（〆切8/14）",
+    lotteryPrice:27500,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"未発売のため転売相場データなし",
+    lotteryUrl:"https://www.30th.pokemon-card.com/product/furbox",
+    sourceUrl:null,
+    applyPeriod:"8月10日(月)12:00〜8月14日(金)16:59",
+    announceDate:"8月21日(金)17:00以降",
+    saleType:"lottery"
+  },
+  {
+    id:"pk-30th-premium-deck",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"30th CELEBRATION プレミアムデッキセット エーフィ・ブラッキー",
+    store:"ポケモンセンターオンライン等",
+    period:"応募期間 8月10日(月)12:00〜8月14日(金)16:59",
+    periodStart:"2026-08-10",
+    deadline:"2026-08-14",
+    status:"open", statusText:"受付中（〆切8/14）",
+    lotteryPrice:6200,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"未発売のため転売相場データなし",
+    lotteryUrl:"https://www.30th.pokemon-card.com/product/mf",
+    sourceUrl:null,
+    applyPeriod:"8月10日(月)12:00〜8月14日(金)16:59",
+    announceDate:"8月21日(金)15:00以降",
+    saleType:"lottery"
+  },
+  {
+    id:"pk-storm-emerald",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ストームエメラルダ 拡張パック（BOX）",
+    store:"エディオン（会員限定抽選）",
+    period:"抽選応募 8月7日(金)10:00〜8月16日(日)23:59【エディオン各種会員限定】",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-16",
+    status:"open", statusText:"受付中（〆切8/16）",
+    lotteryPrice:6000,
+    resaleLow:19000, resaleHigh:19000,
+    dataStatus:"confirmed", confidence:"中",
+    note:"発売直後は21,000〜27,000円台だったが8月11日時点では約19,000円まで下落傾向（PRICE BASE調べ）。エディオンカード会員／あんしん保証会員／アプリ会員／ID会員が対象（一次情報はInside Games記事、応募フォーム自体はJS動的表示のため直接確認不可）",
+    lotteryUrl:"https://edion-cp.com/pokeca082801",
+    sourceUrl:"https://price-base.com/useful/stormemeralda-box-market",
+    applyPeriod:"8月7日(金)10:00〜8月16日(日)23:59",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"pk-blackbolt-whiteflare",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ブラックボルト／ホワイトフレア 拡張パック（BOX）",
+    store:"ゲオ 抽選販売サイト",
+    period:"直近の抽選は8月6日(木)17:59に終了。次回未定",
+    periodStart:null,
+    closedOn:"2026-08-06",
+    status:"closed", statusText:"受付終了（次回未定）",
+    lotteryPrice:5800,
+    resaleLow:27690, resaleHigh:27690,
+    dataStatus:"confirmed", confidence:"中〜高",
+    note:"ヤフオク落札平均額を採用。2026年8月11日時点で受付中の具体的な応募先は確認できず（ゲオの抽選サイトは「現在、受付中の抽選はありません」と表示）。次回開催時は公式ページで告知されます",
+    lotteryUrl:"https://draw.geo-online.co.jp/lottery/",
+    sourceUrl:"https://kakaku.com/item/S0001031090/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"pk-megabrave",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"メガブレイブ（BOX）",
+    store:"エディオン（会員限定抽選）",
+    period:"抽選応募 8月7日(金)10:00〜8月16日(日)23:59【エディオン各種会員限定】",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-16",
+    status:"open", statusText:"受付中（〆切8/16）",
+    lotteryPrice:5400,
+    resaleLow:11300, resaleHigh:11300,
+    dataStatus:"confirmed", confidence:"中〜高",
+    note:"発売直後の13,000〜20,000円台から下落し8月11日時点は11,300円前後（PRICE BASE調べ）。エディオンカード会員／あんしん保証会員／アプリ会員／ID会員が対象（一次情報はInside Games記事、応募フォーム自体はJS動的表示のため直接確認不可）",
+    lotteryUrl:"https://edion-cp.com/pokeca082801",
+    sourceUrl:"https://nyuka-now.com/archives/159770",
+    applyPeriod:"8月7日(金)10:00〜8月16日(日)23:59",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"pk-battlecollection-sd100",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"MEGAスタートデッキ100 バトルコレクション",
+    store:"エディオン（会員限定抽選）",
+    period:"エディオン:8月7日(金)10:00〜8月16日(日)23:59【会員限定】／しまむらパーク(アプリ):〜8月9日(日)23:00",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-16",
+    status:"open", statusText:"受付中（〆切8/16）",
+    lotteryPrice:891,
+    resaleLow:2600, resaleHigh:2600,
+    dataStatus:"confirmed", confidence:"低〜中",
+    note:"しまむらパークのアプリ内抽選は8月9日(日)23:00に締切済み、当選発表は8月10日午前に実施済み。エディオンはエディオンカード会員／あんしん保証会員／アプリ会員／ID会員が対象（〆切8/16）",
+    lotteryUrl:"https://edion-cp.com/pokeca082801",
+    sourceUrl:"https://price-base.com/useful/battlecollection-market",
+    applyPeriod:"8月7日(金)10:00〜8月16日(日)23:59（エディオン）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"pk-megasymphonia-box",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"メガシンフォニア BOX（再販分）",
+    store:"ホビーステーション ほか",
+    period:"抽選期間 7月31日(金)〜8月2日(日)【店舗により異なる】",
+    periodStart:"2026-07-31",
+    closedOn:"2026-08-02",
+    status:"closed", statusText:"受付終了（店舗により異なる）",
+    lotteryPrice:5400,
+    resaleLow:10000, resaleHigh:11000,
+    dataStatus:"confirmed", confidence:"中",
+    note:"店頭受取制。当選発表・受取期間は店舗ごとに8月10〜27日の間で異なる",
+    lotteryUrl:"https://www.hbst.net/?p=410593",
+    sourceUrl:"https://price-base.com/useful/megasymphonia-box-market",
+    applyPeriod:"7月31日(金)〜8月2日(日)【ホビーステーション枠、店舗により異なる】",
+    announceDate:"8月10日〜8月27日予定（店舗により異なる）",
+    saleType:"lottery"
+  },
+  {
+    id:"yugioh-original-artwork",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"遊☆戯☆王 ORIGINAL ARTWORK COLLECTION",
+    store:"コナミスタイル／ドラゴンスター通販",
+    period:"応募期間 コナミスタイル:8月5日(水)11:00〜8月17日(月)23:59／ドラゴンスター通販:〜8月16日(日)23:59",
+    periodStart:"2026-08-05",
+    deadline:"2026-08-17",
+    status:"open", statusText:"受付中",
+    lotteryPrice:5940,
+    resaleLow:7500, resaleHigh:9000,
+    dataStatus:"reference", confidence:"低（前作実績を参考値として記載）",
+    note:"前作シリーズの相場実績。今作が同水準になるとは限らない。当選発表は8月26日以降の見込み",
+    lotteryUrl:"https://x.com/konamistyle/status/2084829242911773019",
+    sourceUrl:"https://price-base.com/useful/worldcs2025-box-market",
+    applyPeriod:"8月5日(水)11:00〜8月17日(月)23:59",
+    announceDate:"8月26日以降の見込み",
+    saleType:"lottery"
+  },
+  {
+    id:"yugioh-wcs2026",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"LIMITED PACK WORLD CHAMPIONSHIP 2026",
+    store:"オフィシャルトーナメントストア／フルイチ 各店",
+    period:"8月29日(土)発売・関連抽選あり（応募開始日は不明）",
+    periodStart:null,
+    status:"soon", statusText:"受付前",
+    lotteryPrice:3960,
+    resaleLow:5000, resaleHigh:5000,
+    dataStatus:"reference", confidence:"低（前年WCS2025実績を参考値として記載）",
+    note:"未発売のため確定データではない。フルイチ各店でも抽選/受付を実施との情報あり（詳細期間は不明）",
+    lotteryUrl:"https://www.yugioh-card.com/japan/products/26lp/",
+    sourceUrl:"https://price-base.com/useful/worldcs2025-box-market",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"yugioh-deckbuild-gv",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"デッキビルドパック グロリアス・ヴィクターズ",
+    store:"キッズリパブリック（アプリ）",
+    period:"抽選受付中・締切8月13日(木)19:59（開始日不明）",
+    periodStart:null,
+    deadline:"2026-08-13",
+    status:"open", statusText:"受付中（〜8/13締切）",
+    lotteryPrice:2970,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売9月5日のため未発売・転売相場データなし",
+    lotteryUrl:"https://www.yugioh-card.com/japan/products/dbgv/",
+    sourceUrl:null,
+    applyPeriod:"〜8月13日(木)19:59（開始日不明）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"yugioh-immortal-phoenix",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"IMMORTAL PHOENIX",
+    store:"エクストレカ／メディアワールドプラス",
+    period:"抽選受付中・締切不明",
+    periodStart:null,
+    status:"open", statusText:"受付中（締切不明）",
+    lotteryPrice:5940,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売10月31日のため未発売・転売相場データなし。公式応募ページを特定できず、まとめサイトのリンクを掲載",
+    lotteryUrl:"https://www.cardchusen.com/yugioh/immortal-phoenix",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"yugioh-utility-selection",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"UTILITY SELECTION",
+    store:"ブックオフ草加セーモンプラザ店 ほか",
+    period:"8月8日(土)発売・先着販売（受付時間不明）",
+    periodStart:"2026-08-08",
+    status:"unknown", statusText:"要確認（店舗により継続の可能性）",
+    lotteryPrice:5940,
+    resaleLow:6400, resaleHigh:10990,
+    dataStatus:"confirmed", confidence:"中（価格.com店舗間価格差。6,400円はAmazon、10,990円は一部専門店価格）",
+    note:"当たりカード単体では「月女神の至天」約18,000円、「聖王女ローズパメラ」約30,000円との初動報告あり（BOX全体の相場とは別）",
+    lotteryUrl:"https://www.yugioh-card.com/japan/products/ut01/",
+    sourceUrl:"https://snkrdunk.com/articles/32977/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"onepiece-4th-anniversary",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"ONE PIECEカードゲーム 4th ANNIVERSARY SET",
+    store:"プレミアムバンダイ",
+    period:"抽選期間 8月3日(月)11:00 〜 9月2日(水)23:00／発送は2027年2月予定",
+    periodStart:"2026-08-03",
+    deadline:"2026-09-02",
+    status:"open", statusText:"受付中",
+    lotteryPrice:18700,
+    resaleLow:150000, resaleHigh:150000,
+    dataStatus:"reference", confidence:"中（PRICE BASE独自調査、単一情報源のため参考値扱い）",
+    note:"4th本体の相場予想値（PRICE BASE調べ）。発送は2027年2月と先のため、実際の相場は変動する可能性が大きい",
+    lotteryUrl:"https://p-bandai.jp/item/item-1000255670/",
+    sourceUrl:"https://price-base.com/useful/onepiece4thanniversaryset-market",
+    applyPeriod:"8月3日(月)11:00〜9月2日(水)23:00",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"onepiece-op17",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"世界最強の戦士【OP-17】（BOX）",
+    store:"プレミアムバンダイ／ゲオ ほか全国159店舗以上",
+    period:"8月22日(土)発売・プレミアムバンダイ2次抽選8月7日(木)17:00〜8月18日(火)23:00（1次抽選は7/29〜8/4で終了済み。全国159店舗以上で抽選/先着企画実施中、詳細は店舗ごとに確認要）",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-18",
+    status:"open", statusText:"受付中（〆切8/18）",
+    lotteryPrice:5760,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"未発売のため転売相場データなし。プレミアムバンダイは1次抽選(7/29〜8/4)終了後、2次抽選(8/7〜8/18)を実施中",
+    lotteryUrl:"https://p-bandai.jp/item/item-1000255803/",
+    sourceUrl:null,
+    applyPeriod:"8月7日(木)17:00〜8月18日(火)23:00（プレミアムバンダイ2次抽選分）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"onepiece-st30-startdeck",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"スタートデッキEX ルフィ&エース【ST-30】",
+    store:"お宝創庫グループ（アプリ）",
+    period:"抽選期間 8月6日(木)12:00〜8月9日(日)23:45",
+    periodStart:"2026-08-06",
+    closedOn:"2026-08-09",
+    status:"closed", statusText:"受付終了（当選発表8/12予定）",
+    lotteryPrice:1980,
+    resaleLow:12500, resaleHigh:13500,
+    dataStatus:"confirmed", confidence:"中",
+    note:"パラレル版リーダーカード単体は過去メルカリで77,777〜80,000円との情報あり（2026年5月時点データのため古い可能性、BOX全体の相場とは別）",
+    lotteryUrl:"https://www.otakarasouko.com/information/95974459/",
+    sourceUrl:"https://kakaku.com/item/S0001041205/",
+    applyPeriod:"8月6日(木)12:00〜8月9日(日)23:45",
+    announceDate:"8月12日頃（アプリ通知）",
+    saleType:"lottery"
+  },
+  {
+    id:"onepiece-op13-reprint",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"ブースターパック 受け継がれる意志【OP-13】（8月再入荷分）",
+    store:"ONE PIECE麦わらストア（渋谷など5店舗）",
+    period:"抽選期間 7月31日(金)0:00〜8月2日(日)23:59",
+    periodStart:"2026-07-31",
+    closedOn:"2026-08-02",
+    status:"closed", statusText:"抽選終了（受取期間8/8〜8/15）",
+    lotteryPrice:5280,
+    resaleLow:29800, resaleHigh:29800,
+    dataStatus:"reference", confidence:"低（相場データの取得時期が不明瞭）",
+    note:"当選発表は8月3〜5日予定。受取期間は8月8日〜8月15日",
+    lotteryUrl:"https://www.mugiwara-store.com/news/2622/",
+    sourceUrl:"https://www.mercardop.jp/product/7086",
+    applyPeriod:"7月31日(金)0:00〜8月2日(日)23:59",
+    announceDate:"8月3〜5日予定",
+    saleType:"lottery"
+  },
+  {
+    id:"onepiece-op15-reprint",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"ブースターパック 神の島の冒険【OP-15】（8月再入荷分）",
+    store:"ONE PIECE麦わらストア（渋谷など5店舗）",
+    period:"抽選期間 7月31日(金)0:00〜8月2日(日)23:59",
+    periodStart:"2026-07-31",
+    closedOn:"2026-08-02",
+    status:"closed", statusText:"抽選終了（受取期間8/8〜8/15）",
+    lotteryPrice:5280,
+    resaleLow:7500, resaleHigh:8400,
+    dataStatus:"reference", confidence:"低（相場データが2026年3月時点のもので古い可能性）",
+    note:"当選発表は8月3〜5日予定。受取期間は8月8日〜8月15日",
+    lotteryUrl:"https://www.mugiwara-store.com/news/2623/",
+    sourceUrl:"https://price-base.com/useful/kaminoshimanoboken-box-market",
+    applyPeriod:"7月31日(金)0:00〜8月2日(日)23:59",
+    announceDate:"8月3〜5日予定",
+    saleType:"lottery"
+  },
+  {
+    id:"db-storybooster01-bandai",
+    category:"dragonball", categoryLabel:"ドラゴンボールカード", icon:"🟠",
+    name:"STORY BOOSTER 01【ST01】（フュージョンワールド）",
+    store:"バンダイナムコCross Store／フュージョンワールドオフィシャルストア全店",
+    period:"事前抽選期間 7月29日(水)10:00〜8月2日(日)23:59",
+    periodStart:"2026-07-29",
+    closedOn:"2026-08-02",
+    status:"closed", statusText:"受付終了（購入対応は本日まで）",
+    lotteryPrice:7920,
+    resaleLow:31000, resaleHigh:47520,
+    dataStatus:"confirmed", confidence:"中（複数販売店の掲載価格とまとめサイト独自集計を併記）",
+    note:"1BOX24パック・税込。当選者の購入対応期限は8月9日まで",
+    lotteryUrl:"https://bandainamco-am.co.jp/official_shop/dbs-cardgame/news/important/20260728.html",
+    sourceUrl:"https://price-base.com/useful/storybooster01-box-market",
+    applyPeriod:"7月29日(水)10:00〜8月2日(日)23:59",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"db-storybooster01-tokyo",
+    category:"dragonball", categoryLabel:"ドラゴンボールカード", icon:"🟠",
+    name:"STORY BOOSTER 01【ST01】（DRAGON BALL STORE TOKYO抽選）",
+    store:"DRAGON BALL STORE TOKYO",
+    period:"抽選期間 7月25日(土)12:00〜7月31日(金)23:59",
+    periodStart:"2026-07-25",
+    closedOn:"2026-07-31",
+    status:"closed", statusText:"受付終了（購入対応は本日まで）",
+    lotteryPrice:7920,
+    resaleLow:31000, resaleHigh:47520,
+    dataStatus:"confirmed", confidence:"中（同一商品のためバンダイナムコCross Store枠と相場を共有）",
+    note:"LivePocketでの抽選応募。当選発表8月1日(土)12:00以降",
+    lotteryUrl:"https://x.com/DB_STORE_info/status/2080488142461915418",
+    sourceUrl:"https://price-base.com/useful/storybooster01-box-market",
+    applyPeriod:"7月25日(土)12:00〜7月31日(金)23:59",
+    announceDate:"8月1日(土)12:00以降",
+    saleType:"lottery"
+  },
+  {
+    id:"db-storybooster01-pbandai",
+    category:"dragonball", categoryLabel:"ドラゴンボールカード", icon:"🟠",
+    name:"STORY BOOSTER 01【ST01】（プレミアムバンダイ抽選・10パック構成）",
+    store:"プレミアムバンダイ",
+    period:"抽選応募期間は不明（8月8日発売済み。バンダイナムコCross Store／DRAGON BALL STORE TOKYO枠とは別のプレミアムバンダイ独自の抽選枠）",
+    periodStart:null,
+    status:"unknown", statusText:"要確認（応募期間不明）",
+    lotteryPrice:6600,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（応募期間・当選発表日を確認できず）",
+    note:"1パック6枚入り×10パックの構成で、通常の1BOX24パック(¥7,920)とは異なる商品ページ。応募期間・締切・当選発表日を裏付ける情報源を確認できなかったため、詳細は商品ページで直接ご確認ください",
+    lotteryUrl:"https://p-bandai.jp/item/item-1000255641/",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"beyblade-ux21",
+    category:"beyblade", categoryLabel:"ベイブレード", icon:"🔵",
+    name:"UX-21 ヘルズネザーデッキセット",
+    store:"タカラトミーモール",
+    period:"抽選期間は7月20日(月)23:59に終了・8月8日発売",
+    periodStart:null,
+    closedOn:"2026-07-20",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:4500,
+    resaleLow:30000, resaleHigh:30000,
+    dataStatus:"reference", confidence:"低（SNS目撃情報のみ・未確定）",
+    note:"公式・出品実績による裏付けがなく参考値扱い。品薄のため8/7〜8/11に追加の受注販売あり（別項目参照）",
+    lotteryUrl:"https://x.com/tbh_pr/status/2077230382592987298",
+    sourceUrl:null,
+    applyPeriod:"〜7月20日(月)23:59（開始日不明）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"beyblade-3on3-case",
+    category:"beyblade", categoryLabel:"ベイブレード", icon:"🔵",
+    name:"3on3デッキケース ブラックVer.（BX-57）",
+    store:"タカラトミーモール",
+    period:"抽選期間は7月20日(月)23:59に終了・8月8日発売",
+    periodStart:null,
+    closedOn:"2026-07-20",
+    status:"closed", statusText:"受付終了・発売済み",
+    lotteryPrice:1100,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"転売相場データなし",
+    lotteryUrl:"https://hobby.watch.impress.co.jp/docs/news/2125287.html",
+    sourceUrl:null,
+    applyPeriod:"〜7月20日(月)23:59（開始日不明）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"beyblade-reorder-set",
+    category:"beyblade", categoryLabel:"ベイブレード", icon:"🔵",
+    name:"CX-16／UX-20／UX-21 品薄対応セット（受注販売）",
+    store:"タカラトミーモール",
+    period:"受注受付 8月7日(金)12:00〜8月11日(火)23:59",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-11",
+    status:"open", statusText:"受付中（〆切8/11）",
+    lotteryPrice:4500,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"抽選ではなく期間内注文分をまとめて生産する受注販売（各商品1人1個まで）。発送は2027年1月中旬予定。価格は3点セット中UX-21の単価",
+    lotteryUrl:"https://beyblade.takaratomy.co.jp/beyblade-x/news/news260729.html",
+    sourceUrl:null,
+    applyPeriod:"8月7日(金)12:00〜8月11日(火)23:59",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"watch-otsuka-lotec-8go",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"大塚ローテック 8号",
+    store:"大塚ローテック 公式ECサイト",
+    period:"直近の抽選は6月20日(土)17:00〜23:30実施済み。次回未定",
+    periodStart:"2026-06-20",
+    closedOn:"2026-06-20",
+    status:"closed", statusText:"受付終了（次回未定）",
+    lotteryPrice:990000,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（8号単体の転売相場データなし）",
+    note:"過去モデルは軒並み定価の1.8〜2.5倍で転売される傾向（7.5号・5号改の実績を参照）",
+    lotteryUrl:"https://otsuka-lotec.com/models/674/",
+    sourceUrl:null,
+    applyPeriod:"次回未定（前回6月20日実施）",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"watch-otsuka-lotec-75",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"大塚ローテック 7.5号",
+    store:"大塚ローテック 公式ECサイト",
+    period:"抽選 8月2日(日)17:00〜23:30",
+    periodStart:"2026-08-02",
+    closedOn:"2026-08-02",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:396000,
+    resaleLow:571000, resaleHigh:736780,
+    dataStatus:"confirmed", confidence:"中（複数のオークション成約例・買取参考価格。情報源により幅あり）",
+    note:"定価の約1.4〜1.9倍で取引。ヤフオク成約例は571,000／587,000／598,000円等も報告されており相場に幅がある（※2026年8月11日時点でこの相場を裏付ける最新ソースは再確認できておらず要再検証）",
+    lotteryUrl:"https://otsuka-lotec.com/models/276/",
+    sourceUrl:"https://tenbai.blog/archives/post-24376/",
+    applyPeriod:"8月2日(日)17:00〜23:30",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"watch-kentex-frieren",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"ケンテックス × 葬送のフリーレン オリジナルウォッチ（ゾルトラーク／花畑を出す魔法 全2種）",
+    store:"ケンテックス公式ショップ",
+    period:"予約受付開始 6月19日(金)〜（終了日不明）",
+    periodStart:"2026-06-19",
+    status:"open", statusText:"受付中（2次生産分予約受付中）",
+    lotteryPrice:38500,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"公式ショップで正式に先着順の予約制と確認。1次生産分は完売済み、現在2次生産分を予約受付中（発送予定2026年9月末、シリアルナンバー001/500〜500/500）。2次受付の終了日は明記なし",
+    lotteryUrl:"https://kentex-shop.com/SHOP/E664M-01.html",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"nike-aj3-sportrenaissance",
+    category:"nike", categoryLabel:"Nike", icon:"⚪",
+    name:"(WMNS) Air Jordan 3 Retro \"Sport Renaissance\"（CK9246-400）",
+    store:"mita sneakers（店頭抽選）",
+    period:"店頭抽選 8月8日(土)17:00〜8月13日(木)19:00",
+    periodStart:"2026-08-08",
+    deadline:"2026-08-13",
+    status:"open", statusText:"受付中（〆切8/13 19:00）",
+    lotteryPrice:29700,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売前のため転売相場データなし。当選発表8月15日(土)9:00頃・受け取り8月15日〜17日",
+    lotteryUrl:"https://blog.mita-sneakers.co.jp/%E3%80%90%E5%BA%97%E9%A0%AD%E6%8A%BD%E9%81%B8%E8%B2%A9%E5%A3%B2%E5%91%8A%E7%9F%A5%E3%80%91-226-39669.html",
+    sourceUrl:null,
+    applyPeriod:"8月8日(土)17:00〜8月13日(木)19:00",
+    announceDate:"8月15日(土)9:00頃",
+    saleType:"lottery"
+  },
+  {
+    id:"nike-aj6-oreo",
+    category:"nike", categoryLabel:"Nike", icon:"⚪",
+    name:"Air Jordan 6 Retro \"Oreo\" \"Michael Jordan\"（CT8529-108）",
+    store:"mita sneakers（店頭抽選）",
+    period:"店頭抽選 8月1日(土)0:00〜8月6日(木)19:00",
+    periodStart:"2026-08-01",
+    closedOn:"2026-08-06",
+    status:"closed", statusText:"受付終了・発売済み",
+    lotteryPrice:32340,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（国内の具体的な転売相場データ未確認）",
+    note:"海外メディアでは「16年ぶり復刻の即完売グレイル」と評されるが、国内相場の実測値は確認できず",
+    lotteryUrl:"https://www.mita-sneakers.co.jp/products/ct8529-108",
+    sourceUrl:null,
+    applyPeriod:"8月1日(土)0:00〜8月6日(木)19:00",
+    announceDate:"8月8日(土)9:00頃",
+    saleType:"lottery"
+  },
+  {
+    id:"nike-kobe-af1",
+    category:"nike", categoryLabel:"Nike", icon:"⚪",
+    name:"Kobe Bryant × Nike Air Force 1 Low Protro QS \"Lord of the Rings\"（IQ3921-100）",
+    store:"atmos（ウェブ抽選）",
+    period:"ウェブ抽選 7月28日(火)18:00〜8月3日(月)8:59",
+    periodStart:"2026-07-28",
+    closedOn:"2026-08-03",
+    status:"closed", statusText:"受付終了・発売済み",
+    lotteryPrice:22550,
+    resaleLow:25899, resaleHigh:25899,
+    dataStatus:"reference", confidence:"低（検索結果経由の情報で一次URL未確認）",
+    note:"SNKRDUNK上の即決価格情報（個別記事の直接URLは未確認のため参考値扱い）。atmos公式ページは403エラーで直接確認できず。海外二次流通では定価の約1.8倍との情報もあり、円建て相場は要再検証",
+    lotteryUrl:"https://sneakerbardetroit.com/kobe-bryant-nike-air-force-1-low-protro-lord-of-the-rings/",
+    sourceUrl:null,
+    applyPeriod:"7月28日(火)18:00〜8月3日(月)8:59",
+    announceDate:null,
+    saleType:"lottery"
+  },
+  {
+    id:"ichibankuji-onepiece-elbaf",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ ワンピース -エルバフ編- GIANT BASH!! Vol.2",
+    store:"セブン-イレブン／一番くじONLINE ほか",
+    period:"発売 8月8日(土)〜（店頭順次・オンラインはキュー制）",
+    periodStart:"2026-08-08",
+    status:"open", statusText:"販売中（早期完売の可能性）",
+    lotteryPrice:790,
+    resaleLow:6000, resaleHigh:25500,
+    dataStatus:"reference", confidence:"中（相場まとめサイト情報。賞ごとに幅あり）",
+    note:"1回790円のくじ引きで、当たる景品によって相場は大きく異なります（例：ラストワン賞11,000〜19,000円、D賞ブロギー15,000〜25,500円、A賞ゾロ6,000〜10,500円等）。必ずこの金額の景品が出るわけではありません。令和8年熊本地震により九州地方で郵便物・配送遅延が継続中（日本郵便公式発表）。ただし一番くじ運営による本商品個別の遅延告知は8月11日時点で未確認",
+    lotteryUrl:"https://1kuji.com/products/onep104",
+    sourceUrl:"https://price-base.com/useful/ichibankuji-onep104-market",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"ichibankuji-kimetsu-reorder",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ 鬼滅の刃 〜上弦の弐〜（受注再販売）",
+    store:"一番くじONLINE",
+    period:"受注受付 8月17日(月)11:00〜8月20日(木)23:59",
+    periodStart:"2026-08-17",
+    status:"soon", statusText:"受付前（8/17開始）",
+    lotteryPrice:850,
+    resaleLow:15000, resaleHigh:20000,
+    dataStatus:"reference", confidence:"中（初回販売分の相場まとめサイト情報。再販分は変動の可能性あり）",
+    note:"抽選ではなく期間内注文をすべて受理する受注再販売。相場は初回販売時のデータ（A賞胡蝶しのぶ16,000円〜、C賞童磨15,500円〜、D賞てちてちフィギュア20,000円〜、ラストワン15,000円〜）を基にした参考範囲です",
+    lotteryUrl:"https://1kuji.com/products/kimetsu30_2",
+    sourceUrl:"https://price-base.com/useful/ichibankuji-kimetsu30-market",
+    applyPeriod:"8月17日(月)11:00〜8月20日(木)23:59",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"ichibankuji-gintama",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ 銀魂 生誕20周年記念 銀魂展〜はたちのつどい〜その弐",
+    store:"一番くじ公式ショップ／一番くじONLINE",
+    period:"店頭 8月21日(金)〜順次／オンライン 8月24日(月)17:00〜",
+    periodStart:"2026-08-21",
+    status:"soon", statusText:"受付前（8/21開始）",
+    lotteryPrice:800,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売前のため転売相場データなし",
+    lotteryUrl:"https://1kuji.com/products/gintama22",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"ichibankuji-dragonballgt",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ ドラゴンボールGT",
+    store:"ローソン／一番くじ公式ショップ／一番くじONLINE ほか",
+    period:"店頭 8月22日(土)〜順次／オンライン 8月24日(月)17:00〜",
+    periodStart:"2026-08-22",
+    status:"soon", statusText:"受付前（8/22開始）",
+    lotteryPrice:790,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売前のため転売相場データなし。ラストワン賞「THE GIGANT NAME」は当選50個限定。ダブルチャンスキャンペーンは発売日〜11月末まで実施予定",
+    lotteryUrl:"https://1kuji.com/products/db_gt",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"chiikawa-7eleven-kuji",
+    category:"chiikawa", categoryLabel:"ちいかわ", icon:"🟤",
+    name:"エニマイくじ ちいかわ〜ちいかわと夏の思い出〜",
+    store:"セブン-イレブン／イトーヨーカドー",
+    period:"発売 7月25日(金)〜／ダブルチャンス応募は〜8月31日(月)",
+    periodStart:"2026-07-25",
+    deadline:"2026-08-31",
+    status:"open", statusText:"販売中・キャンペーン応募受付中（〜8/31）",
+    lotteryPrice:950,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"店頭くじ販売に加え、レシート応募のダブルチャンス抽選キャンペーンを実施中",
+    lotteryUrl:"https://anymy.jp/kuji/projects/26",
+    sourceUrl:"https://prtimes.jp/main/html/rd/p/000000062.000138299.html",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"ichibankuji-jujutsu-5th-final",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ アニメ『呪術廻戦』5周年FINAL！",
+    store:"ファミリーマート等（全国）／一番くじONLINE",
+    period:"発売 9月26日(土)〜順次（店頭・オンライン同日開始予定）",
+    periodStart:"2026-09-26",
+    status:"soon", statusText:"受付前（9/26発売予定）",
+    lotteryPrice:800,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
+    note:"A賞:虎杖悠仁MASTERLISE、B賞:乙骨憂太MASTERLISE、D〜G賞:各アークのビッグアクリルスタンド、ラストワン賞:五条悟MASTERLISE。C・H・I・J賞とダブルチャンス詳細は8月11日時点で未発表",
+    lotteryUrl:"https://1kuji.com/products/jujutsu19",
+    sourceUrl:"https://jujutsukaisen.jp/goods/goods144_5th.php",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"metal-apita-k18-necklace-8men",
+    category:"metal", categoryLabel:"貴金属", icon:"⭕",
+    name:"18金 8面トリプル喜平ネックレス（20g・50cm）",
+    store:"アピタ／ピアゴ（店頭注文販売）",
+    period:"注文受付期間 8月1日(土)〜8月31日(月)・グループ全店合計限定40点・商品お渡し時に全額あと払い",
+    periodStart:"2026-08-01",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:462000,
+    resaleLow:354960, resaleHigh:354960,
+    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
+    note:"1gあたり税抜¥21,000（税込¥23,100）、BOX付き。転売相場は2026年8月10日時点のK18買取相場（¥17,748/g、ゴールドプラザ調べ）から20g分を換算した地金換算値で、実際の中古ジュエリー市場価格とは異なります。この換算値は購入価格（税込¥462,000）を下回るため、地金相場ベースでは利益は見込めません。ユーザー提供のチラシ（2026年8月1日〜31日実施）が情報源です",
+    lotteryUrl:"https://www.apitashop.com/",
+    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
+    applyPeriod:"8月1日(土)〜8月31日(月)",
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"metal-apita-k18-necklace-12men",
+    category:"metal", categoryLabel:"貴金属", icon:"⭕",
+    name:"18金 12面トリプル喜平ネックレス（30.2g・50cm）",
+    store:"アピタ／ピアゴ（店頭注文販売）",
+    period:"注文受付期間 8月1日(土)〜8月31日(月)・グループ全店合計限定30点・商品お渡し時に全額あと払い",
+    periodStart:"2026-08-01",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:697620,
+    resaleLow:536190, resaleHigh:536190,
+    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
+    note:"1gあたり税抜¥21,000（税込¥23,100）、BOX付き。転売相場は2026年8月10日時点のK18買取相場（¥17,748/g、ゴールドプラザ調べ）から30.2g分を換算した地金換算値で、実際の中古ジュエリー市場価格とは異なります。この換算値は購入価格（税込¥697,620）を下回るため、地金相場ベースでは利益は見込めません。ユーザー提供のチラシ（2026年8月1日〜31日実施）が情報源です",
+    lotteryUrl:"https://www.apitashop.com/",
+    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
+    applyPeriod:"8月1日(土)〜8月31日(月)",
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"metal-apita-k18-limited-lineup",
+    category:"metal", categoryLabel:"貴金属", icon:"⭕",
+    name:"18金 数量限定ジュエリー各種（ブレスレット／ネックレス）",
+    store:"アピタ／ピアゴ（店頭注文販売）",
+    period:"注文受付期間 8月1日(土)〜8月31日(月)・商品お渡し時に全額あと払い",
+    periodStart:"2026-08-01",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:275880,
+    resaleLow:202327, resaleHigh:202327,
+    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
+    note:"1gあたり税抜¥22,000（税込¥24,200）のラインナップ。12面トリプル喜平ブレスレット5.1g(税込¥123,420・限定40点)／7.9g(税込¥191,180・限定50点)／12.9g(税込¥312,180・限定30点)、12面トリプル喜平ネックレス11.4g(税込¥275,880・限定40点、掲載価格として代表採用)／20.1g(税込¥486,420・限定50点)。転売相場は代表商品(11.4g)をK18買取相場（¥17,748/g）で地金換算した参考値で、いずれのサイズも購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
+    lotteryUrl:"https://www.apitashop.com/",
+    sourceUrl:"https://goldplaza.jp/gold/rate/marketprice-18k",
+    applyPeriod:"8月1日(土)〜8月31日(月)",
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"metal-apita-platinum-necklace",
+    category:"metal", categoryLabel:"貴金属", icon:"⭕",
+    name:"プラチナ（Pt850） 6面ダブル喜平ネックレス各種",
+    store:"アピタ／ピアゴ（店頭注文販売）",
+    period:"注文受付期間 8月1日(土)〜8月31日(月)・各サイズ限定50点・商品お渡し時に全額あと払い",
+    periodStart:"2026-08-01",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:242000,
+    resaleLow:158940, resaleHigh:158940,
+    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリーとしての工芸費・デザイン料は含まない参考値）",
+    note:"1gあたり税抜¥11,000。10g・50cm(税込¥121,000)／20g・50cm(税込¥242,000・掲載価格として代表採用)／30g・50cm(税込¥363,000)の3サイズ、各限定50点。転売相場は代表商品(20g)を2026年8月10〜11日時点のPt850買取相場（¥7,947/g、ゴールドプラザ調べ）で地金換算した参考値で、購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
+    lotteryUrl:"https://www.apitashop.com/",
+    sourceUrl:"https://goldplaza.jp/gold/platinum/pt850",
+    applyPeriod:"8月1日(土)〜8月31日(月)",
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"metal-apita-puregold-ingot",
+    category:"metal", categoryLabel:"貴金属", icon:"⭕",
+    name:"純金（FINEGOLD 999.9） インゴット／ペンダントトップ各種",
+    store:"アピタ／ピアゴ（店頭注文販売）",
+    period:"注文受付期間 8月1日(土)〜8月31日(月)・商品お渡し時に全額あと払い",
+    periodStart:"2026-08-01",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:99000,
+    resaleLow:45110, resaleHigh:45110,
+    dataStatus:"reference", confidence:"低（金地金としての想定買取換算値。ジュエリー加工費・デザイン料は含まない参考値）",
+    note:"1gあたり税抜¥31,000。純金インゴットペンダントトップ2gリバティー(税込¥99,000・掲載価格として代表採用、限定枚数はチラシ内で判読困難のため不明)のほか、50gインゴットバー(税込¥1,705,000)、5g・10gリバティーペンダントトップ等も掲載。転売相場は代表商品(2g)を2026年8月11日時点のK24金価格（¥22,555/g、田中貴金属調べ）で地金換算した参考値で、購入価格を下回るため地金相場ベースでは利益は見込めません。ユーザー提供のチラシが情報源です",
+    lotteryUrl:"https://www.apitashop.com/",
+    sourceUrl:"https://gold.tanaka.co.jp/commodity/souba/d-gold.php",
+    applyPeriod:"8月1日(土)〜8月31日(月)",
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"livepocket-pokemon-30th",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」",
+    store:"ホビーステーション（LivePocket抽選）",
+    period:"応募期間 8月4日(火)12:00〜8月6日(木)23:59",
+    periodStart:"2026-08-04",
+    closedOn:"2026-08-06",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:7200,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"発売9月16日のため未発売・転売相場データなし。当選者は8月14日〜9月13日に店頭で現金前払い",
+    lotteryUrl:"https://livepocket.jp/e/m3_6v",
+    sourceUrl:null,
+    applyPeriod:"8月4日(火)12:00〜8月6日(木)23:59",
+    announceDate:"8月13日(木)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-yugioh-limitover",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"遊戯王 LIMIT OVER COLLECTION -THE HEROES-／-THE RIVALS-",
+    store:"ホビーステーション新潟店（LivePocket抽選・新潟店OPEN記念）",
+    period:"応募期間 7月9日(木)12:00〜7月12日(日)23:59",
+    periodStart:"2026-07-09",
+    closedOn:"2026-07-12",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:5775,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"新潟店OPEN記念の店舗限定抽選。購入期間は7月17日〜7月26日",
+    lotteryUrl:"https://livepocket.jp/e/vemic",
+    sourceUrl:null,
+    applyPeriod:"7月9日(木)12:00〜7月12日(日)23:59",
+    announceDate:"7月15日(水)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-onepiece-op17-hbst",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"ONE PIECEカードゲーム ブースターパック「世界最強の戦士」",
+    store:"ホビーステーション（LivePocket抽選）",
+    period:"応募期間 8月7日(金)12:00〜8月9日(日)23:59【確認時点で受付終了表示】",
+    periodStart:"2026-08-07",
+    closedOn:"2026-08-09",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:5400,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"価格は5,400円と5,760円の2説あり（媒体により差異）。購入期間（当選者）は8月22日〜8月28日。プレミアムバンダイ抽選（ワンピースカードカテゴリに別掲）とは別の応募枠",
+    lotteryUrl:"https://livepocket.jp/e/ank-t",
+    sourceUrl:null,
+    applyPeriod:"8月7日(金)12:00〜8月9日(日)23:59",
+    announceDate:"8月18日(火)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-chiikawa-bonbon",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"ちいかわボンボンドロップ（シールセット）",
+    store:"パーティリコ イオンモール幕張新都心店（LivePocket抽選）",
+    period:"応募期間 6月13日(土)12:00〜6月15日(月)23:59",
+    periodStart:"2026-06-13",
+    closedOn:"2026-06-15",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:2200,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"1枚550円×4種セット。販売期間（当選者）は6月19日〜6月21日",
+    lotteryUrl:"https://livepocket.jp/e/xq_vs",
+    sourceUrl:null,
+    applyPeriod:"6月13日(土)12:00〜6月15日(月)23:59",
+    announceDate:"6月16日(火)21:00頃",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-pokemon-fewmany-abyss",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"アビスアイ／ストームエメラルダ 拡張パック（BOX）",
+    store:"FEWMANY新宿マルイアネックス店（LivePocket抽選）",
+    period:"応募 8月11日(火)11:00〜20:00／購入 8月16日(日)10:30〜20:00",
+    periodStart:"2026-08-11",
+    deadline:"2026-08-11",
+    status:"soon", statusText:"受付前（8/11開始）",
+    lotteryPrice:6000,
+    resaleLow:8000, resaleHigh:23500,
+    dataStatus:"reference", confidence:"中（時期により相場変動が大きい複数ソースの合成値）",
+    note:"アビスアイ・ストームエメラルダ2商品共通の応募枠。応募期間の一次ソースは2026年8月11日時点で再確認できておらず要検証",
+    lotteryUrl:"https://livepocket.jp/e/zgu0a",
+    sourceUrl:null,
+    applyPeriod:"8月11日(火)11:00〜20:00",
+    announceDate:"8月13日(木)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-pokemon-fewmany-megabrave",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"メガブレイブ／メガシンフォニア（BOX）",
+    store:"FEWMANY新宿マルイアネックス店（LivePocket抽選）",
+    period:"応募 8月11日(火)11:00〜20:00／購入 8月15日(土)11:00〜20:00",
+    periodStart:"2026-08-11",
+    deadline:"2026-08-11",
+    status:"soon", statusText:"受付前（8/11開始）",
+    lotteryPrice:5400,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"応募ページ上は応募自体が無料表示のみで、実売価格は過去実施回の参考値。応募期間の一次ソースは2026年8月11日時点で再確認できておらず要検証",
+    lotteryUrl:"https://livepocket.jp/e/v6mpg",
+    sourceUrl:null,
+    applyPeriod:"8月11日(火)11:00〜20:00",
+    announceDate:"8月13日(木)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-pokemon-hbst-stormemeralda-2",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"ストームエメラルダ 拡張パック（BOX）※ホビーステーション再販抽選",
+    store:"ホビーステーション（全国対象店舗・LivePocket抽選）",
+    period:"応募期間 8月11日(火)12:00〜8月13日(木)23:59",
+    periodStart:"2026-08-11",
+    deadline:"2026-08-13",
+    status:"open", statusText:"受付中（〆切8/13）",
+    lotteryPrice:6000,
+    resaleLow:21000, resaleHigh:27000,
+    dataStatus:"reference", confidence:"中（7/31〜8/11時点の市場取引価格帯、シュリンク有無で変動）",
+    note:"当選発表8月20日予定、購入期間8月24日〜8月30日。公式サイトで商品別の個別応募ページURLを特定できなかったため、ホビーステーションの公式お知らせ一覧ページをリンク先としています",
+    lotteryUrl:"https://www.hbst.net/category/news/",
+    sourceUrl:"https://www.hbst.net/category/news/",
+    applyPeriod:"8月11日(火)12:00〜8月13日(木)23:59",
+    announceDate:"8月20日予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-pokemon-hbst-30th-premiumdeck",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"ポケモンカードゲームMEGA 30th CELEBRATION プレミアムトレーナーBOX（エーフィ・ブラッキー）",
+    store:"ホビーステーション（全国対象店舗・LivePocket抽選）",
+    period:"応募期間 8月4日(火)12:00〜8月6日(木)23:59",
+    periodStart:"2026-08-04",
+    closedOn:"2026-08-06",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:6200,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"当選発表8月14日予定、受け取り期間9月16日〜10月4日。未発売のため転売相場データなし",
+    lotteryUrl:"https://www.hbst.net/category/news/",
+    sourceUrl:null,
+    applyPeriod:"8月4日(火)12:00〜8月6日(木)23:59",
+    announceDate:"8月14日予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-yugioh-cardwings",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"UTILITY SELECTION（2BOX購入抽選）",
+    store:"CARD WINGS秋葉原駅前店（LivePocket抽選）",
+    period:"応募 8月2日(日)18:00〜8月3日(月)23:59／購入 8月8日(土)〜8月10日(月)",
+    periodStart:"2026-08-02",
+    closedOn:"2026-08-03",
+    status:"closed", statusText:"受付終了（購入期間中）",
+    lotteryPrice:11880,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"2BOX分の価格。個別カード（月女神の至天、聖王女ローズパメラ等）は18,000〜30,000円との初動情報があるが、BOX単位の相場は不明",
+    lotteryUrl:"https://livepocket.jp/e/ej1fm",
+    sourceUrl:null,
+    applyPeriod:"8月2日(日)18:00〜8月3日(月)23:59",
+    announceDate:"8月3〜4日予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-onepiece-girafull",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"世界最強の戦士【OP-17】（BOX）",
+    store:"GIRAFULL京都店 ほか（LivePocket抽選）",
+    period:"応募 8月8日(土)12:00〜8月11日(火)23:59／購入 8月22日(土)〜8月24日(月)",
+    periodStart:"2026-08-08",
+    deadline:"2026-08-11",
+    status:"open", statusText:"受付中（〆切8/11）",
+    lotteryPrice:5760,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"GIRAFULLオタロード店・なんば店・広島名古屋大須店・広島ドンキ店でも同時期に同企画を実施（詳細は店舗ごとに確認要）。応募締切は本日8月11日(火)23:59。未発売のため転売相場データなし",
+    lotteryUrl:"https://livepocket.jp/e/t2waa",
+    sourceUrl:null,
+    applyPeriod:"8月8日(土)12:00〜8月11日(火)23:59",
+    announceDate:"8月15日(土)までに予定",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-dragonball-kiddyland",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"STORY BOOSTER 01【ST01】購入券抽選",
+    store:"キデイランドららぽーと富士見店（LivePocket抽選）",
+    period:"応募 8月10日(月)10:00〜8月11日(火)23:59／購入 8月15日(土)〜8月17日(月)",
+    periodStart:"2026-08-10",
+    deadline:"2026-08-11",
+    status:"open", statusText:"受付中（本日23:59締切）",
+    lotteryPrice:6600,
+    resaleLow:22000, resaleHigh:22000,
+    dataStatus:"reference", confidence:"中（複数の相場サイトが同水準を報告する発売直後の初動相場）",
+    note:"同時に「スーパーダイバーズ アドバンスパック バトルオブサイヤン」も同条件（同一URL体系の別ページ）で抽選実施",
+    lotteryUrl:"https://livepocket.jp/e/slq-z",
+    sourceUrl:null,
+    applyPeriod:"8月10日(月)10:00〜8月11日(火)23:59",
+    announceDate:"8月13日(木)18時頃",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-beyblade-hakone",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"BEYBLADE X × EVANGELION CX-00 エヴァンゲリオンデッキセット",
+    store:"箱根湯本えゔぁ屋（LivePocket抽選）",
+    period:"応募 8月14日(金)12:00〜8月16日(日)23:59／購入 8月29日(土)〜8月31日(月)",
+    periodStart:"2026-08-14",
+    deadline:"2026-08-16",
+    status:"soon", statusText:"受付前（8/14開始）",
+    lotteryPrice:7500,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足",
+    note:"EVANGELION STORE TOKYO-01（池袋PARCO本館6F）でも同条件で同時開催。応募期間の一次ソースは2026年8月11日時点で再確認できておらず要検証",
+    lotteryUrl:"https://livepocket.jp/e/p36au",
+    sourceUrl:null,
+    applyPeriod:"8月14日(金)12:00〜8月16日(日)23:59",
+    announceDate:"8月21日(金)15:00以降",
+    saleType:"lottery"
+  },
+  {
+    id:"livepocket-beyblade-kiddyland-umeda",
+    category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
+    name:"UX-21 ヘルズネザーデッキセット／BX-00 B4ドランソード3-60F Ver.2.0（購入券抽選）",
+    store:"キデイランド大阪梅田店（LivePocket抽選）",
+    period:"応募 8月7日(金)10:00〜8月9日(日)23:59／購入 8月14日(金)〜8月16日(日)",
+    periodStart:"2026-08-07",
+    closedOn:"2026-08-09",
+    status:"closed", statusText:"受付終了",
+    lotteryPrice:4500,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（LivePocket上でイベント掲載が消失、終了と推定。直接の終了告知は未確認のため低確度）",
+    note:"ドランソードは1,600円。購入券方式の抽選",
+    lotteryUrl:"https://livepocket.jp/e/cq3j-",
+    sourceUrl:null,
+    applyPeriod:"8月7日(金)10:00〜8月9日(日)23:59",
+    announceDate:"8月12日(水)中",
+    saleType:"lottery"
+  }
+];
+
+const CATEGORIES = [
+  {key:"pokemon", label:"ポケモンカード", icon:"🔴"},
+  {key:"yugioh", label:"遊戯王カード", icon:"🟣"},
+  {key:"onepiece", label:"ワンピースカード", icon:"🟡"},
+  {key:"dragonball", label:"ドラゴンボールカード", icon:"🟠"},
+  {key:"beyblade", label:"ベイブレード", icon:"🔵"},
+  {key:"watch", label:"腕時計", icon:"⚫"},
+  {key:"nike", label:"Nike", icon:"⚪"},
+  {key:"ichibankuji", label:"一番くじ", icon:"🟢"},
+  {key:"chiikawa", label:"ちいかわ", icon:"🟤"},
+  {key:"livepocket", label:"LivePocket", icon:"🔘"},
+  {key:"metal", label:"貴金属", icon:"⭕"}
+];
+
+let activeCats = new Set();
+const UNKNOWN_TEXT = "未定（抽選ページでご確認ください）";
+
+function fmtYen(n){ return "¥" + n.toLocaleString("ja-JP"); }
+
+function confBadgeClass(status){
+  if(status==="confirmed") return "conf-high";
+  if(status==="reference") return "conf-mid";
+  return "conf-low";
+}
+
+const STALE_DAYS = 7;
+function isStale(item){
+  if(item.status !== "closed" || !item.closedOn) return false;
+  const closedDate = new Date(item.closedOn + "T00:00:00");
+  const diffDays = (Date.now() - closedDate.getTime()) / 86400000;
+  return diffDays >= STALE_DAYS;
+}
+
+function sortRank(item){
+  // 1:受付中(期限の近い順) 2:受付中あり 3:受付前(開始日の近い順) 4:受付終了 5:その他(要確認)
+  if(item.status === "open"){
+    return item.statusText === "受付中あり" ? 2 : 1;
+  }
+  if(item.status === "soon") return 3;
+  if(item.status === "closed") return 4;
+  return 5;
+}
+
+function fmtDateBadge(periodStart){
+  if(!periodStart) return "随時／日付未定";
+  const d = new Date(periodStart + "T00:00:00");
+  return `開始 ${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function typeTag(item){
+  if(item.saleType === "backorder") return "【受注販売】";
+  return item.saleType === "firstcome" ? "【先着販売】" : "【抽選販売】";
+}
+
+function hookLine(item){
+  const verb = item.saleType === "backorder" ? "受注受付" : "抽選";
+  if(item.status==="open") return `${item.store}で『${item.name}』の${verb}が始まっています🎯`;
+  if(item.status==="soon") return `${item.store}で『${item.name}』の${verb}が始まるようです🎯`;
+  if(item.status==="closed") return `${item.store}で『${item.name}』の${verb}が終了しました🎯`;
+  return `${item.store}で『${item.name}』の${verb}について情報が入っています🎯`;
+}
+
+function buildTweetText(item){
+  if(item.saleType === "backorder") return buildBackorderTweetText(item);
+  const tag = typeTag(item);
+  const isLottery = item.saleType === "lottery";
+  const lines = [];
+  lines.push(hookLine(item));
+  lines.push("");
+  lines.push(tag);
+  lines.push(item.name);
+  lines.push("");
+  lines.push(`💸価格：${fmtYen(item.lotteryPrice)}`);
+  if(item.resaleLow!=null && item.resaleHigh!=null){
+    const rangeText = item.resaleLow===item.resaleHigh ? fmtYen(item.resaleLow) : `${fmtYen(item.resaleLow)}〜${fmtYen(item.resaleHigh)}`;
+    const refNote = item.dataStatus==="reference" ? "（参考値）" : "";
+    lines.push(`📈相場：${rangeText}${refNote}`);
+  }
+  if(isLottery){
+    lines.push(`📅期間：${item.applyPeriod || UNKNOWN_TEXT}`);
+    lines.push(`🎯当選発表：${item.announceDate || UNKNOWN_TEXT}`);
+  }
+  lines.push("");
+  lines.push(`🔗抽選ページ：${item.lotteryUrl}`);
+  return lines.join("\n");
+}
+
+function buildBackorderTweetText(item){
+  const lines = [];
+  lines.push(hookLine(item));
+  lines.push("");
+  lines.push(typeTag(item));
+  lines.push(item.name);
+  lines.push("");
+  lines.push(`💸価格：${fmtYen(item.lotteryPrice)}`);
+  lines.push("");
+  lines.push(`🔗参考ページ：${item.lotteryUrl}`);
+  return lines.join("\n");
+}
+
+function renderChips(){
+  const chipsEl = document.getElementById("chips");
+  chipsEl.innerHTML = "";
+  const allBtn = document.createElement("button");
+  allBtn.className = "chip" + (activeCats.size===0 ? " active" : "");
+  allBtn.textContent = "全体表示";
+  allBtn.onclick = ()=>{
+    activeCats.clear();
+    render();
+  };
+  chipsEl.appendChild(allBtn);
+  CATEGORIES.forEach(c=>{
+    const btn = document.createElement("button");
+    btn.className = "chip" + (activeCats.has(c.key) ? " active" : "");
+    btn.textContent = `${c.icon} ${c.label}`;
+    btn.onclick = ()=>{
+      if(activeCats.has(c.key)) activeCats.delete(c.key); else activeCats.add(c.key);
+      render();
+    };
+    chipsEl.appendChild(btn);
+  });
+}
+
+function toggleTweet(id){
+  const panel = document.getElementById(`tweet-${id}`);
+  const btn = document.getElementById(`tweet-btn-${id}`);
+  if(!panel) return;
+  const opening = !panel.classList.contains("open");
+  panel.classList.toggle("open", opening);
+  if(btn) btn.classList.toggle("active", opening);
+  if(opening){
+    const item = ITEMS.find(i=>i.id===id);
+    const ta = document.getElementById(`tweet-text-${id}`);
+    if(ta) ta.value = buildTweetText(item);
+  }
+}
+
+function copyTweet(id, btnEl){
+  const ta = document.getElementById(`tweet-text-${id}`);
+  if(!ta) return;
+  const text = ta.value;
+  const showDone = ()=>{
+    const orig = btnEl.textContent;
+    btnEl.textContent = "コピーしました！";
+    setTimeout(()=>{ btnEl.textContent = orig; }, 1500);
+  };
+  const fallback = ()=>{
+    ta.removeAttribute("readonly");
+    ta.select();
+    try{ document.execCommand("copy"); showDone(); }catch(e){}
+    ta.setAttribute("readonly","readonly");
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(showDone).catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
+function postToX(id){
+  const item = ITEMS.find(i=>i.id===id);
+  const text = buildTweetText(item);
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank", "noopener");
+}
+
+function render(){
+  renderChips();
+  const panel = document.getElementById("panel");
+
+  let items = ITEMS.filter(i=>!isStale(i));
+  if(activeCats.size>0) items = items.filter(i=>activeCats.has(i.category));
+
+  items.sort((a,b)=>{
+    const ra = sortRank(a), rb = sortRank(b);
+    if(ra !== rb) return ra - rb;
+    if(ra === 1){
+      const da = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+      const db = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+      return da - db;
+    }
+    if(ra === 3 || ra === 4 || ra === 5){
+      const ta = a.periodStart ? new Date(a.periodStart).getTime() : Infinity;
+      const tb = b.periodStart ? new Date(b.periodStart).getTime() : Infinity;
+      return ta - tb;
+    }
+    return 0;
+  });
+
+  document.getElementById("count").textContent = `${items.length}件`;
+
+  let html;
+  if(items.length===0){
+    html = `<div class="empty">該当する商品はありません。</div>`;
+  } else {
+    html = `<div class="tickets">`;
+    items.forEach(it=>{
+      const pr = (it.resaleLow!=null && it.resaleHigh!=null) ? {lo:it.resaleLow-it.lotteryPrice, hi:it.resaleHigh-it.lotteryPrice} : null;
+      html += `
+        <div class="ticket-wrap">
+          <div class="ticket">
+            <div class="stub status-${it.status}">
+              <div class="status-value">${it.statusText}</div>
+            </div>
+            <div class="info">
+              <div class="tname">${it.name}</div>
+              <div class="badges">
+                <span class="badge date">🗓 ${fmtDateBadge(it.periodStart)}</span>
+                <span class="badge cat">${it.icon} ${it.categoryLabel}</span>
+                <span class="badge ${confBadgeClass(it.dataStatus)}">確度：${it.confidence}</span>
+              </div>
+              <div class="meta">
+                <span><b>販売元：</b>${it.store}</span>
+                <span><b>期間：</b>${it.period}</span>
+                <span><b>抽選価格：</b>${fmtYen(it.lotteryPrice)}</span>
+                ${pr ? `<span><b>転売相場：</b>${it.resaleLow===it.resaleHigh ? fmtYen(it.resaleLow) : fmtYen(it.resaleLow)+"〜"+fmtYen(it.resaleHigh)}</span>` : ""}
+              </div>
+              ${it.note ? `<div class="note">※ ${it.note}</div>` : ""}
+              <div class="links">
+                <a class="src lottery" href="${it.lotteryUrl}" target="_blank" rel="noopener">抽選ページを開く ↗</a>
+                ${it.sourceUrl ? `<a class="src" href="${it.sourceUrl}" target="_blank" rel="noopener">価格情報ソース ↗</a>` : ""}
+              </div>
+            </div>
+            <div class="actions">
+              <button class="tweet-btn" id="tweet-btn-${it.id}" onclick="toggleTweet('${it.id}')">📝 𝕏文章</button>
+            </div>
+          </div>
+          <div class="tweet-panel" id="tweet-${it.id}">
+            <textarea class="tweet-text" id="tweet-text-${it.id}" readonly></textarea>
+            <div class="tweet-actions">
+              <button onclick="copyTweet('${it.id}', this)">📋 コピー</button>
+              <button class="tw-post" onclick="postToX('${it.id}')">𝕏で投稿する ↗</button>
+              <span class="tweet-hint">投稿前に期間・当選発表を抽選ページで確認・補完してください</span>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  panel.innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
