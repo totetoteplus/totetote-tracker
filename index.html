@@ -238,11 +238,11 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月13日 13:30（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月14日 06:30（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
-    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月12日 12:28時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月14日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
   </div>
 
   <div class="toolbar">
@@ -323,9 +323,9 @@ const ITEMS = [
     deadline:"2026-08-16",
     status:"open", statusText:"受付中（〆切8/16）",
     lotteryPrice:6000,
-    resaleLow:19000, resaleHigh:19000,
+    resaleLow:17000, resaleHigh:19500,
     dataStatus:"confirmed", confidence:"中",
-    note:"発売直後は21,000〜27,000円台だったが8月11日時点では約19,000円まで下落傾向（PRICE BASE調べ）。エディオンカード会員／あんしん保証会員／アプリ会員／ID会員が対象（一次情報はInside Games記事、応募フォーム自体はJS動的表示のため直接確認不可）",
+    note:"発売直後は21,000〜27,000円台だったが下落傾向が続き、8月13日時点でBOX約19,000円前後・買取17,000〜19,500円程度との報告あり（PRICE BASE調べ、X:pokecayoyaku）。エディオンカード会員／あんしん保証会員／アプリ会員／ID会員が対象（一次情報はInside Games記事、応募フォーム自体はJS動的表示のため直接確認不可）",
     lotteryUrl:"https://edion-cp.com/pokeca082801",
     sourceUrl:"https://price-base.com/useful/stormemeralda-box-market",
     applyPeriod:"8月7日(金)10:00〜8月16日(日)23:59",
@@ -469,10 +469,10 @@ const ITEMS = [
     category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
     name:"デッキビルドパック グロリアス・ヴィクターズ",
     store:"キッズリパブリック（アプリ）",
-    period:"抽選受付中・締切8月13日(木)19:59（開始日不明）",
+    period:"抽選受付は8月13日(木)19:59に終了（開始日不明）",
     periodStart:null,
-    deadline:"2026-08-13",
-    status:"open", statusText:"受付中（〜8/13締切）",
+    closedOn:"2026-08-13",
+    status:"closed", statusText:"受付終了",
     lotteryPrice:2970,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足",
@@ -657,17 +657,18 @@ const ITEMS = [
     category:"dragonball", categoryLabel:"ドラゴンボールカード", icon:"🟠",
     name:"STORY BOOSTER 01【ST01】（プレミアムバンダイ抽選・10パック構成）",
     store:"プレミアムバンダイ",
-    period:"抽選応募期間は不明（8月8日発売済み。バンダイナムコCross Store／DRAGON BALL STORE TOKYO枠とは別のプレミアムバンダイ独自の抽選枠）",
-    periodStart:null,
-    status:"unknown", statusText:"要確認（応募期間不明）",
+    period:"抽選応募期間 8月7日(金)11:00〜8月20日(木)23:00（8月8日発売済み。バンダイナムコCross Store／DRAGON BALL STORE TOKYO枠とは別のプレミアムバンダイ独自の抽選枠）",
+    periodStart:"2026-08-07",
+    deadline:"2026-08-20",
+    status:"open", statusText:"受付中（〆切8/20）",
     lotteryPrice:6600,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足（応募期間・当選発表日を確認できず）",
-    note:"1パック6枚入り×10パックの構成で、通常の1BOX24パック(¥7,920)とは異なる商品ページ。応募期間・締切・当選発表日を裏付ける情報源を確認できなかったため、詳細は商品ページで直接ご確認ください",
+    dataStatus:"insufficient", confidence:"情報不足（転売相場データなし）",
+    note:"1パック6枚入り×10パックの構成で、通常の1BOX24パック(¥7,920)とは異なる商品ページ。応募期間8/7(金)11:00〜8/20(木)23:00、当選発表は8月下旬予定と判明（複数のXアカウントの投稿で一致確認。一次ソースp-bandai.jpは直接確認できておらずパック構成等の詳細は商品ページで直接ご確認ください）",
     lotteryUrl:"https://p-bandai.jp/item/item-1000255641/",
     sourceUrl:null,
-    applyPeriod:null,
-    announceDate:null,
+    applyPeriod:"8月7日(金)11:00〜8月20日(木)23:00",
+    announceDate:"8月下旬予定",
     saleType:"lottery"
   },
   {
@@ -728,6 +729,25 @@ const ITEMS = [
     saleType:"backorder"
   },
   {
+    id:"beyblade-cx19-krokotredo",
+    category:"beyblade", categoryLabel:"ベイブレード", icon:"🔵",
+    name:"BEYBLADE X CX-19 ランダムブースター クロコトレッドセレクト",
+    store:"タカラトミーモール",
+    period:"抽選期間 8月12日(水)12:00〜8月16日(日)23:59",
+    periodStart:"2026-08-12",
+    deadline:"2026-08-16",
+    status:"open", statusText:"受付中（〆切8/16）",
+    lotteryPrice:1600,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
+    note:"抽選結果通知は8月26日(水)〜28日(金)予定。複数の独立報道（HOBBY Watch、電撃ホビーウェブ等）で応募期間が一致しているが、タカラトミーモールの応募ページ自体は本セッションのネットワーク制限により直接確認できていない",
+    lotteryUrl:"https://takaratomymall.jp/shop/g/g4904810080626/",
+    sourceUrl:null,
+    applyPeriod:"8月12日(水)12:00〜8月16日(日)23:59",
+    announceDate:"8月26日(水)〜28日(金)予定",
+    saleType:"lottery"
+  },
+  {
     id:"watch-otsuka-lotec-8go",
     category:"watch", categoryLabel:"腕時計", icon:"⚫",
     name:"大塚ローテック 8号",
@@ -758,7 +778,7 @@ const ITEMS = [
     lotteryPrice:396000,
     resaleLow:571000, resaleHigh:736780,
     dataStatus:"confirmed", confidence:"中（複数のオークション成約例・買取参考価格。情報源により幅あり）",
-    note:"定価の約1.4〜1.9倍で取引。ヤフオク成約例は571,000／587,000／598,000円等も報告されており相場に幅がある（※2026年8月11日時点でこの相場を裏付ける最新ソースは再確認できておらず要再検証）",
+    note:"定価の約1.4〜1.9倍で取引。ヤフオク成約例は571,000／587,000／598,000円等も報告されており相場に幅がある（※2026年8月11日時点でこの相場を裏付ける最新ソースは再確認できておらず要再検証）。※2026年8月14日の再調査でsourceUrlの記事タイトルが7.5号ではなく8号を指している可能性が指摘されており、紐付けの精度は要再確認",
     lotteryUrl:"https://otsuka-lotec.com/models/276/",
     sourceUrl:"https://tenbai.blog/archives/post-24376/",
     applyPeriod:"8月2日(日)17:00〜23:30",
@@ -790,8 +810,8 @@ const ITEMS = [
     store:"mita sneakers（店頭抽選）",
     period:"店頭抽選 8月8日(土)17:00〜8月13日(木)19:00",
     periodStart:"2026-08-08",
-    deadline:"2026-08-13",
-    status:"open", statusText:"受付中（〆切8/13 19:00）",
+    closedOn:"2026-08-13",
+    status:"closed", statusText:"受付終了（当選発表8/15予定）",
     lotteryPrice:29700,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足",
@@ -1070,8 +1090,8 @@ const ITEMS = [
     store:"ホビーステーション（全国対象店舗・LivePocket抽選）",
     period:"応募期間 8月11日(火)12:00〜8月13日(木)23:59",
     periodStart:"2026-08-11",
-    deadline:"2026-08-13",
-    status:"open", statusText:"受付中（〆切8/13）",
+    closedOn:"2026-08-13",
+    status:"closed", statusText:"受付終了",
     lotteryPrice:6000,
     resaleLow:21000, resaleHigh:27000,
     dataStatus:"reference", confidence:"中（7/31〜8/11時点の市場取引価格帯、シュリンク有無で変動）",
@@ -1085,7 +1105,7 @@ const ITEMS = [
   {
     id:"livepocket-pokemon-hbst-30th-premiumdeck",
     category:"livepocket", categoryLabel:"LivePocket", icon:"🔘",
-    name:"ポケモンカードゲームMEGA 30th CELEBRATION プレミアムトレーナーBOX（エーフィ・ブラッキー）",
+    name:"ポケモンカードゲームMEGA 30th CELEBRATION プレミアムデッキセット エーフィ・ブラッキー",
     store:"ホビーステーション（全国対象店舗・LivePocket抽選）",
     period:"応募期間 8月4日(火)12:00〜8月6日(木)23:59",
     periodStart:"2026-08-04",
@@ -1170,7 +1190,7 @@ const ITEMS = [
     lotteryPrice:7500,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足",
-    note:"EVANGELION STORE TOKYO-01（池袋PARCO本館6F）でも同条件で同時開催。応募期間の一次ソースは2026年8月11日時点で再確認できておらず要検証",
+    note:"EVANGELION STORE TOKYO-01（池袋PARCO本館6F）でも同条件で同時開催。応募開始日はEVANGELION STORE TOKYO-01公式告知（2026年8月13日更新）で8/14 12:00からと確認済み",
     lotteryUrl:"https://livepocket.jp/e/p36au",
     sourceUrl:null,
     applyPeriod:"8月14日(金)12:00〜8月16日(日)23:59",
