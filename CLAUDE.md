@@ -40,7 +40,7 @@ PowerShellツール呼び出しは呼び出しごとに独立プロセスの場�
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 ```
 
-## 自動化：クラウドルーチン（現在アクションが必要な既知の問題あり）
+## 自動化：クラウドルーチン
 
 `RemoteTrigger`（claude.aiの「routines」機能）で毎日6:00 JST（cron `0 21 * * *` UTC）に自動リサーチ・更新・pushを実行するよう設定済み。
 
@@ -49,18 +49,11 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 - 環境: `env_0158ZnbmCHhUupzJQMREh8Yw`、モデル: `claude-sonnet-5`
 - プロンプト内容：両ファイルの二重構造・データ捏造厳禁ルール・作業手順（研究→両ファイル更新→構文チェック→push）を含む。**index.htmlの広告バナー(`.ad-section`)とアフィリエイト表記は変更・削除禁止と明記済み**
 
-### ⚠️ 既知の未解決問題（2026-08-13時点）
+### 2026-08-13朝のpush 403問題は解消済み
 
-2026年8月13日朝の自動実行は、**リサーチ・データ更新・ローカルコミットまでは成功したが、GitHubへのpushが403エラーで失敗し、そのまま反映されずに終了した**。
+2026年8月13日朝の自動実行では、GitHub Appの権限不足によりGitHubへのpushが403エラーで失敗する問題が発生していた（詳細はコミット履歴・過去のセッション記録を参照）。同日昼のクラウドルーチン実行（本セッション）で`git push --dry-run`による権限確認および実際のpush（コミット`027d56f`）が成功したため、**GitHub App側の書き込み権限は復旧済み**と判断できる。以後の自動実行でpushが再び403で失敗するようであれば、https://github.com/settings/installations でtotetoteplusアカウントのClaude GitHub Appの`totetote-tracker`リポジトリへの権限（`Contents: Read and write`）を再確認すること。
 
-- 原因: claude.aiに接続されているGitHub Appがこのリポジトリに対して**読み取り専用**権限しか持っておらず、書き込み権限（`Contents: Read and write`）がない。生のgit push・GitHub MCP経由のAPI書き込み（`push_files`）ともに403 "Resource not accessible by integration"で失敗。
-- クラウドの実行環境は使い捨てサンドボックスのため、そのとき生成された更新内容（コミット`5c0c5b2 2026年8月13日 自動データ更新`）は復元不可能。GitHubには一切反映されていない。
-- **要対応（ユーザー側の操作が必要）**: https://github.com/settings/installations でtotetoteplusアカウントにインストール済みのClaude GitHub Appを開き、`totetote-tracker`リポジトリへの権限が「Contents: Read and write」になっているか確認・修正する。これをしない限り、毎日同じ理由で自動pushが失敗し続ける。
-- この問題を修正後は、`RemoteTrigger action:"run"`で手動再実行するか、翌日6時の定時実行を待てば良い。
-
-### 8/13朝分の埋め合わせ作業（中断中）
-
-上記問題が発覚した際、ローカル環境（このマシン、git pushは正常に動作確認済み）で代わりにリサーチをやり直そうとして、4カテゴリグループ（pokemon/yugioh、onepiece/dragonball、beyblade/watch/nike、ichibankuji/chiikawa/livepocket）に分けて並列でリサーチエージェントを起動したが、**ユーザーからトークン消費を懸念して中断の指示があり、4エージェントとも`TaskStop`で停止済み**。8/13朝分のデータ更新はまだ完了していない。次回セッションで再開する場合は、この4カテゴリ分のリサーチからやり直す必要がある（GitHub Pagesに公開されているのは2026-08-12 12:28時点のデータのまま）。
+なお8/13朝分に埋め合わせが必要だったデータ更新（pokemon/yugioh, onepiece/dragonball, beyblade/watch/nike, ichibankuji/chiikawa, livepocketの5グループ）は本セッションで完了しコミット・push済み。
 
 ## ローカルフォールバック自動化（現在無効化・保険として温存）
 
