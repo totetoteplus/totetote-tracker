@@ -181,9 +181,154 @@ def record_run(stats: RunStats) -> None:
         raise DatabaseError(f"collector_runs insert failed: {exc}") from exc
 
 
-# --- Phase 7以降で拡張予定のインターフェース(構造化済みCollector向け) ---
-#
-# def upsert_product(item: CollectedItem) -> str: ...          # products.id を返す
-# def upsert_listing(product_id: str, item: CollectedItem) -> str: ...
-# def upsert_lottery(product_id: str, item: CollectedItem) -> str: ...
-# def record_price_history(listing_id: str, item: CollectedItem) -> None: ...
+# ============================================================
+# 候補の構造化・昇格（AI補助抽出の結果をproducts/listings/lotteriesへ反映）
+# ============================================================
+
+
+def list_pending_candidates(limit: int = 20) -> list[dict[str, Any]]:
+    """status='pending' の候補を古い順に取得する。"""
+    client = get_client()
+    try:
+        res = (
+            client.table("product_match_candidates")
+            .select("id, raw_product_name, raw_data")
+            .eq("status", "pending")
+            .order("created_at", desc=False)
+            .limit(limit)
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"product_match_candidates lookup failed: {exc}") from exc
+
+    return res.data or []
+
+
+def update_candidate_status(
+    candidate_id: str,
+    status: str,
+    candidate_product_id: str | None = None,
+) -> None:
+    client = get_client()
+    payload: dict[str, Any] = {"status": status}
+    if candidate_product_id is not None:
+        payload["candidate_product_id"] = candidate_product_id
+    try:
+        client.table("product_match_candidates").update(payload).eq(
+            "id", candidate_id
+        ).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"product_match_candidates update failed for id={candidate_id}: {exc}"
+        ) from exc
+
+
+def update_candidate_extraction(
+    candidate_id: str,
+    raw_data: dict[str, Any],
+    status: str,
+    extracted: dict[str, Any],
+) -> None:
+    """AI抽出結果を raw_data.extracted にマージして保存する(自動公開はしない)。
+
+    auto_judgment層(needs_manual_review=True)の候補向け。
+    構造化はできたが、公式リンク・カテゴリ確認が済むまで
+    products/listings/lotteries には反映しない。
+    """
+    client = get_client()
+    merged = {**raw_data, "extracted": extracted}
+    try:
+        client.table("product_match_candidates").update(
+            {"raw_data": merged, "status": status}
+        ).eq("id", candidate_id).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"product_match_candidates extraction update failed for id={candidate_id}: {exc}"
+        ) from exc
+
+
+def find_product_by_normalized_name(normalized_name: str) -> dict[str, Any] | None:
+    """簡易dedupe(v1): 正規化済み商品名の完全一致で既存商品を探す。
+
+    JANが取れない情報源(SNS等)向けの粗い実装。色違い・BOX違い等の誤統合を
+    避けるため、今のところ「完全一致のみ」に留め、類似度判定は将来の課題とする。
+    """
+    client = get_client()
+    try:
+        res = (
+            client.table("products")
+            .select("id")
+            .eq("normalized_name", normalized_name)
+            .limit(1)
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"products lookup failed for name={normalized_name}: {exc}") from exc
+
+    return res.data[0] if res.data else None
+
+
+def insert_product(
+    name: str, normalized_name: str, category: str | None = None
+) -> str:
+    client = get_client()
+    try:
+        res = (
+            client.table("products")
+            .insert(
+                {"name": name, "normalized_name": normalized_name, "category": category}
+            )
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"products insert failed for name={name}: {exc}") from exc
+
+    if not res.data:
+        raise DatabaseError(f"products insert returned no data for name={name}")
+    return res.data[0]["id"]
+
+
+def insert_lottery(
+    product_id: str,
+    shop_id: str,
+    title: str,
+    sale_type: str | None = None,
+    url: str | None = None,
+    application_start: str | None = None,
+    application_end: str | None = None,
+    result_date: str | None = None,
+    release_date: str | None = None,
+    conditions: str | None = None,
+    status: str = "unknown",
+    source_url: str | None = None,
+) -> str:
+    client = get_client()
+    now = datetime.now(timezone.utc).isoformat()
+    try:
+        res = (
+            client.table("lotteries")
+            .insert(
+                {
+                    "product_id": product_id,
+                    "shop_id": shop_id,
+                    "title": title,
+                    "sale_type": sale_type,
+                    "url": url,
+                    "application_start": application_start,
+                    "application_end": application_end,
+                    "result_date": result_date,
+                    "release_date": release_date,
+                    "conditions": conditions,
+                    "status": status,
+                    "source_url": source_url,
+                    "last_checked_at": now,
+                }
+            )
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"lotteries insert failed for title={title}: {exc}") from exc
+
+    if not res.data:
+        raise DatabaseError(f"lotteries insert returned no data for title={title}")
+    return res.data[0]["id"]

@@ -67,7 +67,7 @@ create table if not exists product_match_candidates (
   candidate_product_id uuid references products (id) on delete set null,
   confidence numeric(4,3),
   status text not null default 'pending'
-    check (status in ('pending', 'approved', 'rejected')),
+    check (status in ('pending', 'approved', 'rejected', 'needs_review')),
   source_page_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -123,6 +123,8 @@ create table if not exists lotteries (
   conditions text,
   status text
     check (status in ('soon', 'open', 'closed', 'unknown')),
+  sale_type text
+    check (sale_type in ('lottery', 'firstcome', 'backorder')),
   source_url text,
   last_checked_at timestamptz,
   created_at timestamptz not null default now(),

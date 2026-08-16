@@ -1,39 +1,55 @@
-"""商品の重複排除・同一性判定。Phase 3で実装する。
+"""商品の重複排除・同一性判定。
 
 設計方針（要求仕様より）:
   1. JANコードが一致すれば同一商品とみなす。
   2. JANがない場合、商品名＋メーカー／カテゴリ／ショップ等から類似度判定する。
   3. 色違い・BOX違い・セット商品などを誤統合しないよう、閾値未満は自動統合しない。
   4. 閾値未満・判断不能な場合は products へ直接書き込まず、
-     product_match_candidates に候補として保存する（core.db.save_match_candidate）。
+     product_match_candidates に候補として保存する（core.db.insert_match_candidate）。
 
-ルールベースの類似度判定で十分なケースが大半だが、型番違い・表記揺れなど
-判断が難しいケースは core.ai_assist の補助判定に委譲できるようにする
-（AI_ASSIST_API_KEY未設定時はルールベースのみで動作する）。
+v1実装: SNS等の情報源からはJANが取れないため、正規化済み商品名の完全一致
+のみで判定する（類似度スコアリングは未実装）。一致しなければ常に新規商品
+として扱う点に注意（色違い・型番違いの誤統合は避けられるが、逆に表記揺れ
+による重複登録は許容している。dedupe精度向上は今後の課題）。
 """
 
 from __future__ import annotations
 
+import re
+import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 
-from core.models import CollectedItem
+from core import db
 
 
 class MatchDecision(str, Enum):
-    MATCHED = "matched"          # 既存 products と確定的に一致
+    MATCHED = "matched"          # 既存 products と一致
     NEW_PRODUCT = "new_product"  # 新規商品として登録してよい
-    CANDIDATE = "candidate"      # 自動判定できず product_match_candidates へ
 
 
 @dataclass
 class MatchResult:
     decision: MatchDecision
     product_id: str | None = None
-    confidence: float | None = None
 
 
-def match_product(item: CollectedItem) -> MatchResult:
-    """CollectedItem に対応する products.id を解決する（Phase 3で実装）。"""
+def normalize_name(raw_name: str) -> str:
+    """全角/半角統一・空白圧縮・小文字化した比較用の正規化名を返す。"""
+    text = unicodedata.normalize("NFKC", raw_name)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text.lower()
 
-    raise NotImplementedError("core.dedupe.match_product は Phase 3 で実装する")
+
+def match_product(product_name: str, category: str | None = None) -> MatchResult:
+    """商品名(+カテゴリ)からproducts.idを解決する。JANは対象外(v1)。"""
+    normalized = normalize_name(product_name)
+    existing = db.find_product_by_normalized_name(normalized)
+
+    if existing:
+        return MatchResult(decision=MatchDecision.MATCHED, product_id=existing["id"])
+
+    product_id = db.insert_product(
+        name=product_name, normalized_name=normalized, category=category
+    )
+    return MatchResult(decision=MatchDecision.NEW_PRODUCT, product_id=product_id)
