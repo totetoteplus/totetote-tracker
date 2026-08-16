@@ -1,0 +1,12 @@
+# Python (collector/)
+collector/.venv/
+collector/**/__pycache__/
+collector/**/*.pyc
+collector/.env
+collector/.env.local
+collector/logs/*.log
+collector/.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db

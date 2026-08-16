@@ -1,0 +1,35 @@
+name: Collector - run due jobs
+
+# 毎日6:00 / 18:00 (JST) 前後に起動し、scheduler/run_due.py が
+# scheduler/config.yaml のスケジュールとDB(collector_runs)の直近実行時刻を見て
+# 実行すべきCollectorだけを動かす。
+#
+# cron時刻はUTC表記: 21:00 UTC = 06:00 JST(翌日) / 09:00 UTC = 18:00 JST(同日)
+# GitHub Actionsの scheduled workflow は高負荷時に数分〜十数分遅延することがあるため、
+# run_due.py 側に許容ウィンドウ(15分)を持たせている。
+on:
+  schedule:
+    - cron: "0 21 * * *"
+    - cron: "0 9 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  run-due-collectors:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: collector
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - run: python scheduler/run_due.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TWITTERAPI_IO_KEY: ${{ secrets.TWITTERAPI_IO_KEY }}

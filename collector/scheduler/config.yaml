@@ -1,0 +1,34 @@
+# Collectorごとの取得頻度設定。
+# 実際のスケジューリングロジック（run_due.py が本設定を読んで実行要否を
+# 判定する処理）は Phase 5 で実装する。ここでは設定ファイルの形だけ定義する。
+#
+# 各Collectorは2種類のスケジュール方式のどちらかを持つ:
+#   tier: <high|medium|low>        一定間隔で実行（間隔は下記tiers参照）
+#   schedule: {type: fixed_times}  1日の決まった時刻に実行
+#
+# tier の目安（要求仕様より。実際の間隔は各サイトの利用規約・robots.txt・
+# API制限・サーバー負荷を確認のうえ個別に調整すること):
+#   high:   5〜10分
+#   medium: 30分
+#   low:    1〜6時間
+
+tiers:
+  high:
+    interval_minutes: 10
+  medium:
+    interval_minutes: 30
+  low:
+    interval_minutes: 180
+
+collectors:
+  # Phase 2 第一弾。twitterapi.io経由で複数Xアカウントを横断監視する。
+  # 監視対象アカウント一覧は config/x_accounts.yaml を参照。
+  # ユーザー指定により、間隔tierではなく1日2回の固定時刻実行とする。
+  # 概算コスト: 2回 x 25アカウント = 50コール/日 ≒ 月1,500コール
+  # （twitterapi.io ツイート課金 約$0.15/1,000件のため、月1ドル未満の見込み）。
+  - source_key: x_monitor
+    schedule:
+      type: fixed_times
+      times: ["06:00", "18:00"]
+      timezone: Asia/Tokyo
+    enabled: true

@@ -1,0 +1,118 @@
+# X(Twitter)監視アカウント一覧。twitterapi.io経由で取得する（Phase 2）。
+#
+# tier:
+#   confirmed      -> カテゴリ確定済みの公式/準公式アカウント。
+#                     通常のCollector出力として扱ってよい。
+#   auto_judgment  -> 自動取得はするが、公式リンク・カテゴリの確認が
+#                     済むまで公開（products/listings/lotteriesへの反映）を保留する。
+#                     CollectedItem.needs_manual_review = true として扱う。
+#
+# category は既存トラッカーのカテゴリキーに合わせる:
+#   pokemon / yugioh / onepiece / dragonball / beyblade / watch / nike /
+#   ichibankuji / chiikawa / livepocket
+# auto_judgment はカテゴリ横断・非公式/二次情報源の可能性があるため category: null
+
+accounts:
+  - handle: PokeGetInfoMain
+    category: pokemon
+    tier: confirmed
+  - handle: bic_sagamioono
+    category: pokemon
+    tier: confirmed
+  - handle: pokemoncenterPR
+    category: pokemon
+    tier: confirmed
+    note: ポケモンセンター公式
+  - handle: fc_machida
+    category: pokemon
+    tier: confirmed
+
+  - handle: ONEPIECEtcgSHOP
+    category: onepiece
+    tier: confirmed
+    note: ONE PIECEカードゲーム公式ショップ
+
+  - handle: YuGiOh_OCG_INFO
+    category: yugioh
+    tier: confirmed
+    note: 遊戯王OCG公式
+
+  - handle: dbfw_cgSTORE
+    category: dragonball
+    tier: confirmed
+    note: フュージョンワールド公式ショップ
+
+  - handle: tbh_pr
+    category: beyblade
+    tier: confirmed
+    note: ベイブレード開発チーム公式
+
+  - handle: nikejapan
+    category: nike
+    tier: confirmed
+    note: Nike Japan
+
+  - handle: GSHOCK_OFFICIAL
+    category: watch
+    tier: confirmed
+    note: G-SHOCK JAPAN
+  - handle: CASIOJapan
+    category: watch
+    tier: confirmed
+    note: カシオ公式
+  - handle: CITIZENWATCHJP
+    category: watch
+    tier: confirmed
+    note: シチズン時計公式
+
+  - handle: chiikawa_market
+    category: chiikawa
+    tier: confirmed
+    note: ちいかわマーケット公式
+
+  - handle: ichibanKUJI
+    category: ichibankuji
+    tier: confirmed
+    note: 一番くじ公式
+
+  # --- 自動判定: カテゴリ未確定・非公式/二次情報源の可能性あり ---
+  # 公式リンク・カテゴリの確認が取れるまで公開しない
+  - handle: Meisy_TCG_News
+    category: null
+    tier: auto_judgment
+  - handle: cardchusen_com
+    category: null
+    tier: auto_judgment
+  - handle: furu1_AMzama
+    category: null
+    tier: auto_judgment
+  - handle: sedokoX
+    category: null
+    tier: auto_judgment
+  - handle: tenbai_hakase
+    category: null
+    tier: auto_judgment
+  - handle: p_bandai
+    category: null
+    tier: auto_judgment
+    note: プレミアムバンダイ公式（複数カテゴリを横断するためツイート単位でカテゴリ確認が必要）
+  - handle: KAZOO7a
+    category: null
+    tier: auto_judgment
+    note: かずー（公式リンク確認要）
+  - handle: otaro_labo
+    category: null
+    tier: auto_judgment
+    note: カードラボ オタロード本店
+  - handle: hbst_event
+    category: null
+    tier: auto_judgment
+    note: ホビーステーション公式
+  - handle: toy_yamashiroya
+    category: null
+    tier: auto_judgment
+    note: ヤマシロヤ公式
+  - handle: YS_INFO
+    category: null
+    tier: auto_judgment
+    note: イエローサブマリン公式
