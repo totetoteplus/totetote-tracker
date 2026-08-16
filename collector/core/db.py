@@ -31,7 +31,18 @@ def get_client() -> Client:
             "collector/.env を collector/.env.example からコピーして値を設定してください。"
         )
 
-    return create_client(url, key)
+    # 前後の空白・引用符・改行はコピペ時に混入しやすいため自動で取り除く。
+    # それでも不正な形式ならば、値そのものは出力せず形式面の情報だけを添えて失敗させる。
+    stripped_url = url.strip().strip('"').strip("'")
+    stripped_key = key.strip().strip('"').strip("'")
+    if not stripped_url.startswith("https://"):
+        raise DatabaseError(
+            "SUPABASE_URL の形式が不正な可能性があります "
+            f"(len={len(url)}, starts_with_https={stripped_url.startswith('https://')}). "
+            "Project Settings > API の Project URL をそのまま設定してください。"
+        )
+
+    return create_client(stripped_url, stripped_key)
 
 
 def upsert_shop(name: str, domain: str, official_url: str | None = None) -> str:
