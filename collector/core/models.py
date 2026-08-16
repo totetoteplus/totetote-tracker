@@ -80,6 +80,12 @@ class CollectedItem(BaseModel):
     # products/listings/lotteries への自動反映を保留する（例: X監視のauto_judgment層）
     needs_manual_review: bool = False
 
+    # True の場合、情報源自体は信頼できる一次情報（公式ショップ等）だが
+    # 複数カテゴリを横断するため category が未確定なケース。
+    # AI補助抽出で category が判定できた候補に限り、needs_manual_review を
+    # 満たしていても自動昇格を許可する（判定できなければ引き続き保留）。
+    promote_if_category_known: bool = False
+
 
 class ChangeType(str, Enum):
     NEW_PRODUCT = "new_product"

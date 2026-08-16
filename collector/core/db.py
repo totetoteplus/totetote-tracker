@@ -188,12 +188,17 @@ def record_run(stats: RunStats) -> None:
 
 def list_pending_candidates(limit: int = 20) -> list[dict[str, Any]]:
     """status='pending' の候補を古い順に取得する。"""
+    return list_candidates_by_status("pending", limit=limit)
+
+
+def list_candidates_by_status(status: str, limit: int = 20) -> list[dict[str, Any]]:
+    """指定statusの候補を古い順に取得する。"""
     client = get_client()
     try:
         res = (
             client.table("product_match_candidates")
             .select("id, raw_product_name, raw_data")
-            .eq("status", "pending")
+            .eq("status", status)
             .order("created_at", desc=False)
             .limit(limit)
             .execute()

@@ -82,6 +82,9 @@ class XMonitorCollector(BaseCollector):
                         "handle": account["handle"],
                         "category": account.get("category"),
                         "tier": account.get("tier", "auto_judgment"),
+                        "official_multi_category": account.get(
+                            "official_multi_category", False
+                        ),
                         "text": text,
                         "created_at": tweet.get("createdAt"),
                         "url": url,
@@ -106,6 +109,7 @@ class XMonitorCollector(BaseCollector):
                     checked_at=checked_at,
                     source_method=SourceMethod.THIRD_PARTY_API,
                     needs_manual_review=(row["tier"] == "auto_judgment"),
+                    promote_if_category_known=row["official_multi_category"],
                 )
             )
         return items

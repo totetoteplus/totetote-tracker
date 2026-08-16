@@ -61,12 +61,20 @@ def promote_batch(limit: int = 5) -> None:
                 continue
 
             needs_manual_review = raw_data.get("needs_manual_review", False)
+            promote_if_category_known = raw_data.get(
+                "promote_if_category_known", False
+            )
             product_name = extracted.get("product_name") or raw_data.get(
                 "product_name", ""
             )
             category = extracted.get("category") or raw_data.get("category")
 
-            if needs_manual_review:
+            # 情報源は公式(一次情報)だが複数カテゴリを横断するアカウントは、
+            # AI抽出でカテゴリが判定できた場合に限り保留を解除して昇格させる。
+            still_needs_review = needs_manual_review and not (
+                promote_if_category_known and extracted.get("category")
+            )
+            if still_needs_review:
                 db.update_candidate_extraction(
                     candidate_id, raw_data, "needs_review", extracted
                 )

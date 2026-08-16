@@ -11,6 +11,12 @@
 #   pokemon / yugioh / onepiece / dragonball / beyblade / watch / nike /
 #   ichibankuji / chiikawa / livepocket
 # auto_judgment はカテゴリ横断・非公式/二次情報源の可能性があるため category: null
+#
+# official_multi_category: true
+#   auto_judgment のうち、情報源自体は公式ショップ等の一次情報だが
+#   複数カテゴリを横断するため category を固定できないアカウント用。
+#   AI補助抽出でツイート単位の category が判定できた候補に限り自動昇格を許可する
+#   （二次情報・まとめ/転売系アカウントには付けないこと）。
 
 accounts:
   - handle: PokeGetInfoMain
@@ -95,6 +101,7 @@ accounts:
   - handle: p_bandai
     category: null
     tier: auto_judgment
+    official_multi_category: true
     note: プレミアムバンダイ公式（複数カテゴリを横断するためツイート単位でカテゴリ確認が必要）
   - handle: KAZOO7a
     category: null
@@ -103,16 +110,20 @@ accounts:
   - handle: otaro_labo
     category: null
     tier: auto_judgment
+    official_multi_category: true
     note: カードラボ オタロード本店
   - handle: hbst_event
     category: null
     tier: auto_judgment
+    official_multi_category: true
     note: ホビーステーション公式
   - handle: toy_yamashiroya
     category: null
     tier: auto_judgment
+    official_multi_category: true
     note: ヤマシロヤ公式
   - handle: YS_INFO
     category: null
     tier: auto_judgment
+    official_multi_category: true
     note: イエローサブマリン公式
