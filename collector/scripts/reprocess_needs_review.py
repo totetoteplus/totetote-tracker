@@ -27,6 +27,7 @@ import yaml  # noqa: E402
 
 from core import db, dedupe  # noqa: E402
 from core.errors import DatabaseError  # noqa: E402
+from core.status import compute_lottery_status  # noqa: E402
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "x_accounts.yaml"
 
@@ -96,7 +97,9 @@ def main(limit: int = 200) -> None:
                 result_date=extracted.get("result_date"),
                 release_date=extracted.get("release_date"),
                 conditions=extracted.get("conditions"),
-                status="unknown",
+                status=compute_lottery_status(
+                    extracted.get("application_start"), extracted.get("application_end")
+                ),
                 source_url=source_url,
             )
             db.update_candidate_status(

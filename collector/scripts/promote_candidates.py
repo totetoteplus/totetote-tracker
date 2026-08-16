@@ -25,6 +25,7 @@ load_dotenv()
 
 from core import ai_assist, db, dedupe  # noqa: E402
 from core.errors import DatabaseError  # noqa: E402
+from core.status import compute_lottery_status  # noqa: E402
 
 
 def _shop_domain_from_url(url: str) -> str:
@@ -101,7 +102,9 @@ def promote_batch(limit: int = 5) -> None:
                 result_date=extracted.get("result_date"),
                 release_date=extracted.get("release_date"),
                 conditions=extracted.get("conditions"),
-                status="unknown",
+                status=compute_lottery_status(
+                    extracted.get("application_start"), extracted.get("application_end")
+                ),
                 source_url=source_url,
             )
             db.update_candidate_status(

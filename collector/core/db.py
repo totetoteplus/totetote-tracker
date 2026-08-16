@@ -293,6 +293,33 @@ def insert_product(
     return res.data[0]["id"]
 
 
+def list_lotteries_for_status_refresh() -> list[dict[str, Any]]:
+    """status再計算用に、応募開始/終了日時とstatusだけを取得する。"""
+    client = get_client()
+    try:
+        res = (
+            client.table("lotteries")
+            .select("id, status, application_start, application_end")
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"lotteries lookup failed: {exc}") from exc
+
+    return res.data or []
+
+
+def update_lottery_status(lottery_id: str, status: str) -> None:
+    client = get_client()
+    try:
+        client.table("lotteries").update({"status": status}).eq(
+            "id", lottery_id
+        ).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"lotteries status update failed for id={lottery_id}: {exc}"
+        ) from exc
+
+
 def insert_lottery(
     product_id: str,
     shop_id: str,
