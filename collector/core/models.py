@@ -36,6 +36,7 @@ class SourceMethod(str, Enum):
     HTTP_REQUEST = "http_request"
     BROWSER_AUTOMATION = "browser_automation"
     THIRD_PARTY_API = "third_party_api"  # 例: twitterapi.io 等、サイト自身の公式APIではない仲介API
+    SITEMAP = "sitemap"  # sitemap.xml 等、クローラー向けに公開されている構造化フィード
 
 
 class CollectedItem(BaseModel):

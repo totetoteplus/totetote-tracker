@@ -16,7 +16,6 @@ products/listings/lotteries へ直接反映せず、product_match_candidates 経
 
 from __future__ import annotations
 
-import hashlib
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -25,9 +24,9 @@ from urllib.parse import urlparse
 import yaml
 
 from collectors.base import BaseCollector
-from core import db
-from core.errors import CollectorError, DatabaseError
+from core.errors import CollectorError
 from core.models import CollectedItem, PersistResult, SourceMethod
+from core.staging import persist_as_candidates
 from core.x_client import get_last_tweets
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config" / "x_accounts.yaml"
@@ -111,6 +110,13 @@ class XMonitorCollector(BaseCollector):
             )
         return items
 
+    @staticmethod
+    def _domain_per_account(item: CollectedItem) -> str:
+        """X監視はアカウント単位で shops を分けたいので、handleをdomainに含める。"""
+        parsed_url = urlparse(str(item.product_url))
+        handle = parsed_url.path.strip("/").split("/")[0]
+        return f"{parsed_url.netloc}/{handle}"
+
     def persist(self, current: list[CollectedItem]) -> PersistResult:
         """ツイートURL単位で既知チェックし、未知のものだけ候補として保存する。
 
@@ -119,40 +125,9 @@ class XMonitorCollector(BaseCollector):
         構造化がまだ済んでいないため)。confirmed/auto_judgment の別は
         raw_data にそのまま残し、将来の「候補→正式商品への昇格」処理で使う。
         """
-        result = PersistResult()
-        shop_id_cache: dict[str, str] = {}
-
-        for item in current:
-            try:
-                parsed_url = urlparse(str(item.product_url))
-                handle = parsed_url.path.strip("/").split("/")[0]
-                domain = f"{parsed_url.netloc}/{handle}"
-
-                if domain not in shop_id_cache:
-                    shop_id_cache[domain] = db.upsert_shop(
-                        name=item.shop_name, domain=domain
-                    )
-                shop_id = shop_id_cache[domain]
-
-                source_url = str(item.source_url)
-                if db.find_source_page(shop_id, source_url):
-                    result.skipped_count += 1
-                    continue
-
-                content_hash = hashlib.sha256(
-                    (item.notes or "").encode("utf-8")
-                ).hexdigest()
-                source_page_id = db.insert_source_page(
-                    shop_id, source_url, page_type="x_post", content_hash=content_hash
-                )
-                db.insert_match_candidate(
-                    raw_product_name=item.product_name,
-                    raw_data=item.model_dump(mode="json"),
-                    source_page_id=source_page_id,
-                )
-                result.new_count += 1
-            except DatabaseError as exc:
-                self.logger.error("persist failed for %s: %s", item.source_url, exc)
-                result.errors.append(str(exc))
-
-        return result
+        return persist_as_candidates(
+            current,
+            page_type="x_post",
+            logger=self.logger,
+            domain_fn=self._domain_per_account,
+        )
