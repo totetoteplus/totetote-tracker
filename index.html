@@ -238,7 +238,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月18日 06:23（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月19日 06:20（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -602,16 +602,16 @@ const ITEMS = [
     store:"プレミアムバンダイ／ゲオ ほか全国159店舗以上",
     period:"8月22日(土)発売・プレミアムバンダイ2次抽選8月7日(木)17:00〜8月18日(火)23:00（1次抽選は7/29〜8/4で終了済み。全国159店舗以上で抽選/先着企画実施中、詳細は店舗ごとに確認要）",
     periodStart:"2026-08-07",
-    deadline:"2026-08-18",
-    status:"open", statusText:"受付中（〆切8/18）",
+    closedOn:"2026-08-18",
+    status:"closed", statusText:"受付終了（当選発表8月下旬予定）",
     lotteryPrice:5760,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足",
-    note:"未発売のため転売相場データなし。プレミアムバンダイは1次抽選(7/29〜8/4)終了後、2次抽選(8/7〜8/18)を実施中",
+    note:"未発売のため転売相場データなし。プレミアムバンダイ2次抽選(8/7〜8/18)は受付終了。当選発表は8月下旬、購入期間は2026年9月下旬予定",
     lotteryUrl:"https://p-bandai.jp/item/item-1000255803/",
     sourceUrl:null,
     applyPeriod:"8月7日(木)17:00〜8月18日(火)23:00（プレミアムバンダイ2次抽選分）",
-    announceDate:null,
+    announceDate:"8月下旬予定",
     saleType:"lottery"
   },
   {
@@ -942,12 +942,12 @@ const ITEMS = [
     store:"mita sneakers（店頭抽選）",
     period:"店頭抽選 8月15日(土)0:00〜8月18日(火)19:00",
     periodStart:"2026-08-15",
-    deadline:"2026-08-18",
-    status:"open", statusText:"受付中（〆切8/18）",
+    closedOn:"2026-08-18",
+    status:"closed", statusText:"受付終了（当選発表8/20予定）",
     lotteryPrice:13200,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
-    note:"3カラー展開（HQ4307-001/200/302）、サイズ25.0〜29.0cm。当選連絡8月20日(木)9:00頃、受け取り8月20日(木)11:00〜24日(月)19:30予定。抽選ページ自体は本セッションのネットワーク制限により直接確認できておらず、応募詳細は公式ページで要確認",
+    note:"3カラー展開（HQ4307-001/200/302）、サイズ25.0〜29.0cm。応募受付終了。当選連絡8月20日(木)9:00頃、受け取り8月20日(木)11:00〜24日(月)19:30予定",
     lotteryUrl:"https://draw.mita-sneakers.co.jp/nike-mind-001-store/",
     sourceUrl:null,
     applyPeriod:"8月15日(土)0:00〜8月18日(火)19:00",
@@ -1454,6 +1454,86 @@ const ITEMS = [
     applyPeriod:"8月7日(金)10:00〜8月9日(日)23:59",
     announceDate:"8月12日(水)中",
     saleType:"lottery"
+  },
+  {
+    id:"pk-yamada-30th",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」BOX／プレミアムデッキセット エーフィ・ブラッキー 購入抽選（ヤマダデンキ）",
+    store:"ヤマダデンキ（ヤマダデジタル会員限定）",
+    period:"応募期間 8月17日(月)23:00〜8月19日(水)23:59【ヤマダデジタル会員限定】",
+    periodStart:"2026-08-17",
+    deadline:"2026-08-19",
+    status:"open", statusText:"受付中（〆切8/19）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient",
+    confidence:"中（複数のX投稿・ニュースサイトで一致するが公式ページ未確認）",
+    note:"拡張パックBOX（7,200円）とプレミアムデッキセット エーフィ・ブラッキー（6,200円）のいずれか1種を選択して応募する形式。当選発表9月9日頃、購入期間9月16日〜9月22日予定。公式の告知ページは会員限定アプリ内のため確認できず",
+    lotteryUrl:null,
+    sourceUrl:"https://www.inside-games.jp/article/2026/08/18/186331.html",
+    applyPeriod:"8月17日(月)23:00〜8月19日(水)23:59",
+    announceDate:"9月9日頃予定",
+    saleType:"lottery"
+  },
+  {
+    id:"pk-aeon-30th",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」BOX／プレミアムデッキセット エーフィ・ブラッキー 購入抽選（イオンスタイルオンライン）",
+    store:"イオンスタイルオンライン（会員限定・イオンマークのカード払いのみ）",
+    period:"応募期間 8月19日(水)11:00〜8月20日(木)23:59【イオンスタイルオンライン会員限定】",
+    periodStart:"2026-08-19",
+    deadline:"2026-08-20",
+    status:"open", statusText:"受付中（〆切8/20）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient",
+    confidence:"中（複数のX投稿・ニュースサイトで一致するが公式ページ未確認）",
+    note:"拡張パックBOX（7,216円）とプレミアムデッキセット エーフィ・ブラッキー（6,201円）のいずれか1種を選択して応募する形式。イオンマークの付いたカードでの決済のみ対応。当選発表8月26日12:00頃、購入期限8月26日12:00〜8月27日23:59、発送9月16日以降順次予定",
+    lotteryUrl:null,
+    sourceUrl:"https://www.inside-games.jp/article/2026/08/17/186277.html",
+    applyPeriod:"8月19日(水)11:00〜8月20日(木)23:59",
+    announceDate:"8月26日(水)12:00頃予定",
+    saleType:"lottery"
+  },
+  {
+    id:"watch-amnibus-frieren",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"『葬送のフリーレン』腕時計（蒼月草・魔法陣デザイン）",
+    store:"AMNIBUS（受注販売）",
+    period:"受注期間 8月4日(火)〜9月9日(水)",
+    periodStart:"2026-08-04",
+    deadline:"2026-09-09",
+    status:"open", statusText:"受付中（〆切9/9）",
+    lotteryPrice:6578,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient",
+    confidence:"中（複数の独立ニュースサイトで価格・受注期間が一致するが、AMNIBUS公式商品ページは本セッションのネットワーク制限により直接確認できず）",
+    note:"フリーレンの杖を裏蓋に刻印。発送は2027年1月中旬予定",
+    lotteryUrl:null,
+    sourceUrl:"https://prtimes.jp/main/html/rd/p/000009407.000016064.html",
+    applyPeriod:"8月4日(火)〜9月9日(水)",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"yugioh-artexpansion-mouser",
+    category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
+    name:"YU-GI-OH! CARD GAME ART EXPANSION BOX「鉄獣式撃滅兵装\"Mouser\"」",
+    store:"コナミスタイル（受注販売）",
+    period:"受注期間 7月31日(金)〜8月31日(月)23:59",
+    periodStart:"2026-07-31",
+    deadline:"2026-08-31",
+    status:"open", statusText:"受付中（〆切8/31）",
+    lotteryPrice:11000,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient",
+    confidence:"中（公式ニュース・コナミスタイル公式X複数投稿で応募期間・価格は一致するが、注文ページの正確なURLは未検証）",
+    note:"特製TEE・特製デュエルフィールド（シリコン製）・特典カード「鉄獣式撃滅兵装\"Mouser\"」（ウルトラレア仕様）・特製デュエリストカードプロテクター100枚・特製キーホルダーのセット。発送は2026年12月以降順次予定",
+    lotteryUrl:"https://yu-gi-oh.jp/news_detail.php?page=details&id=2595",
+    sourceUrl:"https://x.com/konamistyle/status/2084595203596296213",
+    applyPeriod:"7月31日(金)〜8月31日(月)23:59",
+    announceDate:null,
+    saleType:"backorder"
   }
 ];
 
