@@ -287,11 +287,11 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月19日 06:20（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月20日 06:17（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
-    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月14日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。右端の「𝕏文章」ボタンで、Xに投稿できる告知文を自動生成できます（@sedokoX さんの投稿スタイルを参考にしたフォーマットです）。期間・当選発表が未確認の項目は「未定（抽選ページでご確認ください）」と表示されますので、投稿前に必ず抽選ページで実際の情報をご確認・補完してください。
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月20日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。右端の「𝕏文章」ボタンで、Xに投稿できる告知文を自動生成できます（@sedokoX さんの投稿スタイルを参考にしたフォーマットです）。期間・当選発表が未確認の項目は「未定（抽選ページでご確認ください）」と表示されますので、投稿前に必ず抽選ページで実際の情報をご確認・補完してください。
   </div>
 
   <div class="toolbar">
@@ -1502,10 +1502,10 @@ const ITEMS = [
     category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
     name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」BOX／プレミアムデッキセット エーフィ・ブラッキー 購入抽選（ヤマダデンキ）",
     store:"ヤマダデンキ（ヤマダデジタル会員限定）",
-    period:"応募期間 8月17日(月)23:00〜8月19日(水)23:59【ヤマダデジタル会員限定】",
+    period:"応募期間 8月17日(月)23:00〜8月19日(水)23:59【ヤマダデジタル会員限定】（受付終了）",
     periodStart:"2026-08-17",
-    deadline:"2026-08-19",
-    status:"open", statusText:"受付中（〆切8/19）",
+    closedOn:"2026-08-19",
+    status:"closed", statusText:"受付終了（当選発表9/9予定）",
     lotteryPrice:null,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient",
@@ -1576,6 +1576,45 @@ const ITEMS = [
     applyPeriod:"7月31日(金)〜8月31日(月)23:59",
     announceDate:null,
     saleType:"backorder"
+  },
+  {
+    id:"pk-30th-sanyodo",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」購入抽選（三洋堂書店）",
+    store:"三洋堂書店（サイト会員限定）",
+    period:"応募期間 8月19日(水)11:00〜9月1日(火)【三洋堂サイト会員限定】",
+    periodStart:"2026-08-19",
+    deadline:"2026-09-01",
+    status:"open", statusText:"受付中（〆切9/1）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient",
+    confidence:"中（まとめブログとニュースサイトの一致情報。三洋堂公式サイトは本セッションのネットワーク制限により直接確認できず）",
+    note:"三洋堂サイトへの会員登録が必須で、購入時に運転免許証等の本人確認書類が必要。当選発表9月11日(金)予定、購入期間9月16日(水)〜9月20日(日)に指定店舗で支払い。未発売のため転売相場データなし",
+    lotteryUrl:null,
+    sourceUrl:"https://meli-melo.blog.jp/archives/1083564310.html",
+    applyPeriod:"8月19日(水)11:00〜9月1日(火)",
+    announceDate:"9月11日(金)予定",
+    saleType:"lottery"
+  },
+  {
+    id:"pk-30th-pokecen-cardset",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」カードセット（9種セット）購入抽選",
+    store:"ポケモンセンターオンライン",
+    period:"応募期間 8月28日(金)12:00〜8月31日(月)16:59",
+    periodStart:"2026-08-28",
+    deadline:"2026-08-31",
+    status:"soon", statusText:"受付前（8/28開始予定）",
+    lotteryPrice:1200,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"高（複数の一次報道メディアが同一日程・内容を報じている）",
+    note:"9種セット、1セット1,200円(税込)。プレイヤーズクラブ会員限定で「本人認証済み枠」の方が当選確率が高い。既存のBOX／デッキセット／FUTURISTIC BOX抽選（8/10〜8/14受付）とは別枠。未発売のため転売相場データなし",
+    lotteryUrl:null,
+    sourceUrl:"https://dengekionline.com/article/202608/83462",
+    applyPeriod:"8月28日(金)12:00〜8月31日(月)16:59",
+    announceDate:"9月4日(金)15:00以降予定",
+    saleType:"lottery"
   }
 ];
 
