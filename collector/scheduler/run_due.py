@@ -27,9 +27,6 @@ from core.errors import CollectorError  # noqa: E402
 
 CONFIG_PATH = Path(__file__).resolve().parent / "config.yaml"
 
-# 固定時刻スケジュールの許容ウィンドウ。cronの遅延・実行間隔のばらつきを吸収する。
-FIXED_TIME_TOLERANCE_MINUTES = 15
-
 # 新しいCollectorを追加したら、ここにも登録すること。
 COLLECTOR_REGISTRY: dict[str, type[BaseCollector]] = {
     "x_monitor": XMonitorCollector,
@@ -44,6 +41,15 @@ def _load_config() -> dict:
 def _is_due_fixed_times(
     schedule: dict, last_run: datetime | None, now_utc: datetime
 ) -> bool:
+    """予定時刻を過ぎていて、かつその時刻以降にまだ実行していなければ due とする。
+
+    GitHub Actionsのscheduled workflowは高負荷時に数十分〜1時間以上遅延することが
+    実測で確認されているため、上限を設けた「許容ウィンドウ」方式は使わない
+    (過去に15分の狭いウィンドウを設けていたところ、実際の起動が毎回ウィンドウを
+    過ぎてしまい、Collectorが1週間近く一度も実行されない不具合が発生した)。
+    「予定時刻以降にlast_runがない」ことだけを条件にすれば、遅延の大小に関わらず
+    実際にワークフローが起動したタイミングで正しく1回だけ実行される。
+    """
     tz = ZoneInfo(schedule.get("timezone", "UTC"))
     now_local = now_utc.astimezone(tz)
 
@@ -52,11 +58,12 @@ def _is_due_fixed_times(
         scheduled_today = now_local.replace(
             hour=hour, minute=minute, second=0, microsecond=0
         )
-        window_end = scheduled_today + timedelta(minutes=FIXED_TIME_TOLERANCE_MINUTES)
 
-        if scheduled_today <= now_local < window_end:
-            if last_run is None or last_run.astimezone(tz) < scheduled_today:
-                return True
+        if now_local < scheduled_today:
+            continue
+
+        if last_run is None or last_run.astimezone(tz) < scheduled_today:
+            return True
     return False
 
 
