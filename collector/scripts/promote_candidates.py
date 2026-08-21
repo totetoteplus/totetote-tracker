@@ -87,12 +87,20 @@ def promote_batch(limit: int = 5) -> None:
             # 抽選ページURL: ツイート内の外部リンクがあればそちら(product_url)、
             # 無ければ暫定的にXの投稿URLをそのまま使う(捏造しないため推測はしない)。
             official_page_url = raw_data.get("product_url") or source_url
-            shop_domain = _shop_domain_from_url(source_url)
-            shop_id = db.upsert_shop(
-                name=raw_data.get("shop_name", shop_domain),
-                domain=shop_domain,
-                official_url=raw_data.get("shop_official_url"),
-            )
+
+            # 実施店舗: 本文中に投稿アカウントとは別の実店舗名が明記されていれば
+            # そちらを優先する(まとめ/転売系アカウント対策)。無ければ投稿アカウント
+            # 自身をshopとして扱う(公式ショップ自身のアカウントである場合の既定挙動)。
+            extracted_shop_name = extracted.get("shop_name")
+            if extracted_shop_name:
+                shop_id = dedupe.match_shop_by_name(extracted_shop_name)
+            else:
+                shop_domain = _shop_domain_from_url(source_url)
+                shop_id = db.upsert_shop(
+                    name=raw_data.get("shop_name", shop_domain),
+                    domain=shop_domain,
+                    official_url=raw_data.get("shop_official_url"),
+                )
 
             match = dedupe.match_product(product_name, category)
 

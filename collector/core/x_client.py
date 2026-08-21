@@ -18,7 +18,9 @@ from core.errors import FetchTimeoutError, HttpError
 
 API_BASE = "https://api.twitterapi.io"
 LAST_TWEETS_PATH = "/twitter/user/last_tweets"
+TWEETS_BY_ID_PATH = "/twitter/tweets"
 REQUEST_TIMEOUT_SECONDS = 20
+TWEETS_BY_ID_BATCH_SIZE = 50  # twitterapi.io の上限(1リクエストあたり最大50件)
 
 
 def _api_key() -> str:
@@ -61,3 +63,40 @@ def get_last_tweets(user_name: str, cursor: str = "") -> dict:
         )
 
     return data
+
+
+def get_tweets_by_ids(tweet_ids: list[str]) -> list[dict]:
+    """指定IDのツイートをまとめて取得する(タイムラインへの新着有無に関わらず個別取得可能)。
+
+    「最新ツイート取得」は直近分しか返らないため、古いツイートの本文/リンクを
+    再取得したい場合(バックフィル等)はこちらを使う。1回のリクエストで
+    最大 TWEETS_BY_ID_BATCH_SIZE 件まで、それを超える場合は分割して呼び出す。
+    """
+    all_tweets: list[dict] = []
+    for i in range(0, len(tweet_ids), TWEETS_BY_ID_BATCH_SIZE):
+        batch = tweet_ids[i : i + TWEETS_BY_ID_BATCH_SIZE]
+        try:
+            response = requests.get(
+                f"{API_BASE}{TWEETS_BY_ID_PATH}",
+                params={"tweet_ids": ",".join(batch)},
+                headers={"x-api-key": _api_key()},
+                timeout=REQUEST_TIMEOUT_SECONDS,
+            )
+        except requests.exceptions.Timeout as exc:
+            raise FetchTimeoutError("twitterapi.io (tweets by id) timed out") from exc
+        except requests.exceptions.RequestException as exc:
+            raise HttpError(
+                0, f"twitterapi.io (tweets by id) request failed: {exc}"
+            ) from exc
+
+        if response.status_code != 200:
+            raise HttpError(
+                response.status_code,
+                f"twitterapi.io (tweets by id) returned {response.status_code}: "
+                f"{response.text[:200]}",
+            )
+
+        data = response.json()
+        all_tweets.extend(data.get("tweets", []))
+
+    return all_tweets

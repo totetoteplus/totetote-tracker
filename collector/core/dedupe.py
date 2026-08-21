@@ -53,3 +53,17 @@ def match_product(product_name: str, category: str | None = None) -> MatchResult
         name=product_name, normalized_name=normalized, category=category
     )
     return MatchResult(decision=MatchDecision.NEW_PRODUCT, product_id=product_id)
+
+
+def match_shop_by_name(shop_name: str) -> str:
+    """本文中に明記された実施店舗名からshops.idを解決する(名称の完全一致のみ、v1)。
+
+    X監視ではshops.domainを "x.com/{handle}" のように投稿アカウント単位で
+    採番しているが、まとめ/転売系アカウントが本文中で別の実店舗名を挙げている
+    場合は、その店舗名を正規化したものを合成domainキー("text:{normalized_name}")
+    として使い、店舗名単位で寄せる。official_urlはテキストからは分からないため
+    常にNone(捏造しないため推測はしない)。
+    """
+    normalized = normalize_name(shop_name)
+    domain = f"text:{normalized}"
+    return db.upsert_shop(name=shop_name, domain=domain, official_url=None)

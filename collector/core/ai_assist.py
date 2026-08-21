@@ -31,6 +31,17 @@ EXTRACTION_SCHEMA = {
             "description": "抽選販売・先着販売・受注販売の告知として関連性があるか",
         },
         "product_name": {"type": ["string", "null"]},
+        "shop_name": {
+            "type": ["string", "null"],
+            "description": (
+                "抽選/販売を実施している実店舗・実運営者の名称が、"
+                "投稿アカウント自身とは別の名前として本文中に明記されている場合のみ、"
+                "その名称をそのまま返す（例: まとめ/転売系アカウントが「竜のしっぽにて抽選販売受付開始」"
+                "のように別の店舗名を挙げているケース）。"
+                "本文が単一の実施店舗を明確に指していない場合"
+                "（複数店舗の一覧、店舗名の記載なし、投稿アカウント自身が実施店舗の場合等）はnull"
+            ),
+        },
         "sale_type": {
             "anyOf": [
                 {"type": "string", "enum": ["lottery", "firstcome", "backorder"]},
@@ -64,7 +75,7 @@ EXTRACTION_SCHEMA = {
         },
     },
     "required": [
-        "is_relevant", "product_name", "sale_type", "price",
+        "is_relevant", "product_name", "shop_name", "sale_type", "price",
         "application_start", "application_end", "result_date",
         "release_date", "conditions", "category",
     ],
@@ -81,6 +92,8 @@ SYSTEM_PROMPT = """あなたは日本語の抽選販売・先着販売・受注�
 - 抽選販売・先着販売・受注販売の告知として明確に関連性がない投稿（無関係な話題、他の抽選のRT、コラボ告知だが販売方式が書かれていない等）は is_relevant を false にする
 - 日付に年が明記されていない場合、文脈上の基準日（渡された「本日の日付」）と同じ年と判断してよいが、月日だけで年をまたぐ可能性が疑われる場合は null にする
 - sale_type は「抽選」なら lottery、「先着」「くじ」なら firstcome、「受注」「予約」なら backorder。判断できなければ null
+- shop_name は、本文中に投稿アカウント自身とは異なる実施店舗名が明記されている場合のみ抽出する。
+  店舗名を投稿アカウント名から推測したり、一般的な知識で補ったりしない
 """
 
 
