@@ -5,13 +5,23 @@ name: Collector - run due jobs
 # 実行すべきCollectorだけを動かす。
 #
 # cron時刻はUTC表記: 21:00 UTC = 06:00 JST(翌日) / 09:00 UTC = 18:00 JST(同日)
-# GitHub Actionsの scheduled workflow は高負荷時に数分〜十数分遅延することがあるため、
-# run_due.py 側に許容ウィンドウ(15分)を持たせている。
+# GitHub Actionsの scheduled workflowは高負荷時に50分〜1時間以上遅延することが
+# 実測で確認されているため、run_due.py側では上限付きの許容ウィンドウ方式を
+# 使わず「予定時刻を過ぎていて、かつ未実行なら実行する」方式にしている
+# (scheduler/run_due.py参照)。
+#
+# concurrency: 手動実行(workflow_dispatch)とスケジュール実行が近い時刻に重なると
+# 同時に2つ動いてしまい、二重にAPIを叩いてしまう(実際に発生を確認済み)。
+# 同時実行を1つに制限し、後から来た方はキューイングして順番に実行させる。
 on:
   schedule:
     - cron: "0 21 * * *"
     - cron: "0 9 * * *"
   workflow_dispatch: {}
+
+concurrency:
+  group: collector-run-due
+  cancel-in-progress: false
 
 jobs:
   run-due-collectors:
