@@ -308,6 +308,27 @@ def list_lotteries_for_status_refresh() -> list[dict[str, Any]]:
     return res.data or []
 
 
+def update_lottery_url(lottery_id: str, url: str) -> None:
+    client = get_client()
+    try:
+        client.table("lotteries").update({"url": url}).eq("id", lottery_id).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"lotteries url update failed for id={lottery_id}: {exc}"
+        ) from exc
+
+
+def list_lotteries_basic() -> list[dict[str, Any]]:
+    """バックフィル用: url/source_url だけをまとめて取得する。"""
+    client = get_client()
+    try:
+        res = client.table("lotteries").select("id, url, source_url").execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"lotteries lookup failed: {exc}") from exc
+
+    return res.data or []
+
+
 def update_lottery_status(lottery_id: str, status: str) -> None:
     client = get_client()
     try:

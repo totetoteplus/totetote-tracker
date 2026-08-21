@@ -81,9 +81,12 @@ def main(limit: int = 200) -> None:
         source_url = raw_data.get("source_url", "")
 
         try:
+            official_page_url = raw_data.get("product_url") or source_url
             shop_domain = _shop_domain_from_url(source_url)
             shop_id = db.upsert_shop(
-                name=raw_data.get("shop_name", shop_domain), domain=shop_domain
+                name=raw_data.get("shop_name", shop_domain),
+                domain=shop_domain,
+                official_url=raw_data.get("shop_official_url"),
             )
             match = dedupe.match_product(product_name, category)
             db.insert_lottery(
@@ -91,7 +94,7 @@ def main(limit: int = 200) -> None:
                 shop_id=shop_id,
                 title=product_name,
                 sale_type=extracted.get("sale_type"),
-                url=source_url,
+                url=official_page_url,
                 application_start=extracted.get("application_start"),
                 application_end=extracted.get("application_end"),
                 result_date=extracted.get("result_date"),

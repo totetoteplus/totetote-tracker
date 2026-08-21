@@ -48,6 +48,32 @@ def _parse_created_at(value: str | None) -> datetime | None:
         return None
 
 
+def _first_url_entity(tweet: dict) -> str | None:
+    """ツイート本文中の外部リンク(t.co展開後)の最初の1件を返す。無ければNone。"""
+    urls = ((tweet.get("entities") or {}).get("urls")) or []
+    for u in urls:
+        expanded = u.get("expanded_url")
+        if expanded:
+            return expanded
+    return None
+
+
+def _author_name(tweet: dict) -> str | None:
+    return ((tweet.get("author") or {}).get("name")) or None
+
+
+def _author_bio_url(tweet: dict) -> str | None:
+    """プロフィール欄に設定された公式サイトリンク(あれば)を返す。"""
+    author = tweet.get("author") or {}
+    bio = author.get("profile_bio") or {}
+    urls = (((bio.get("entities") or {}).get("url")) or {}).get("urls") or []
+    for u in urls:
+        expanded = u.get("expanded_url")
+        if expanded:
+            return expanded
+    return None
+
+
 class XMonitorCollector(BaseCollector):
     source_key = "x_monitor"
     display_name = "X監視 (twitterapi.io)"
@@ -88,6 +114,9 @@ class XMonitorCollector(BaseCollector):
                         "text": text,
                         "created_at": tweet.get("createdAt"),
                         "url": url,
+                        "official_link": _first_url_entity(tweet),
+                        "author_name": _author_name(tweet),
+                        "author_bio_url": _author_bio_url(tweet),
                     }
                 )
         return rows
@@ -101,10 +130,17 @@ class XMonitorCollector(BaseCollector):
                     # ツイート本文自体は商品名として確定していないため、
                     # あくまで一次スクリーニング用の暫定表示名として先頭80文字を使う。
                     product_name=row["text"][:80],
-                    product_url=row["url"],
-                    shop_name=f"X: @{row['handle']}",
+                    # ツイート内に外部リンク(entities.urls)があれば実際の抽選/告知ページと
+                    # みなして使う。無ければ暫定的にツイート自体のURLをそのまま使う
+                    # (捏造厳禁のため、無いものをAIに推測させたりはしない)。
+                    product_url=row["official_link"] or row["url"],
+                    # 表示名はXアカウントの表示名(プロフィール名)をそのまま使う
+                    # ("X: @handle"のような便宜的な名前より実店舗/実運営名に近い)。
+                    shop_name=row["author_name"] or f"X: @{row['handle']}",
+                    shop_official_url=row["author_bio_url"],
                     notes=row["text"],
                     category=row["category"],
+                    # 発見元(ツイート自体)のURLは常にこちらへ固定する。
                     source_url=row["url"],
                     checked_at=checked_at,
                     source_method=SourceMethod.THIRD_PARTY_API,
@@ -116,8 +152,12 @@ class XMonitorCollector(BaseCollector):
 
     @staticmethod
     def _domain_per_account(item: CollectedItem) -> str:
-        """X監視はアカウント単位で shops を分けたいので、handleをdomainに含める。"""
-        parsed_url = urlparse(str(item.product_url))
+        """X監視はアカウント単位で shops を分けたいので、handleをdomainに含める。
+
+        product_url はツイート内の外部リンクに差し替わっている場合があるため、
+        アカウントを一意に特定できる source_url (ツイート自体のURL) を基準にする。
+        """
+        parsed_url = urlparse(str(item.source_url))
         handle = parsed_url.path.strip("/").split("/")[0]
         return f"{parsed_url.netloc}/{handle}"
 

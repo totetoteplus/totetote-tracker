@@ -50,6 +50,7 @@ class CollectedItem(BaseModel):
     product_name: str
     product_url: HttpUrl
     shop_name: str
+    shop_official_url: HttpUrl | None = None
     image_url: HttpUrl | None = None
 
     price: int | None = None

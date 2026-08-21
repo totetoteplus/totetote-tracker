@@ -42,8 +42,11 @@ def persist_as_candidates(
             domain = domain_fn(item)
 
             if domain not in shop_id_cache:
+                official_url = (
+                    str(item.shop_official_url) if item.shop_official_url else None
+                )
                 shop_id_cache[domain] = db.upsert_shop(
-                    name=item.shop_name, domain=domain
+                    name=item.shop_name, domain=domain, official_url=official_url
                 )
             shop_id = shop_id_cache[domain]
 
