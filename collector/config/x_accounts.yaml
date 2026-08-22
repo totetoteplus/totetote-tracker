@@ -32,11 +32,23 @@ accounts:
   - handle: fc_machida
     category: pokemon
     tier: confirmed
+  - handle: pokecayoyaku
+    category: pokemon
+    tier: confirmed
+    note: ポケモンカード抽選予約速報
+  - handle: pokecachan
+    category: pokemon
+    tier: confirmed
+    note: ポケカ予約速報＠ポケモンカード情報
 
   - handle: ONEPIECEtcgSHOP
     category: onepiece
     tier: confirmed
     note: ONE PIECEカードゲーム公式ショップ
+  - handle: onepiecetcgnews
+    category: onepiece
+    tier: confirmed
+    note: ワンピースカードまとめ｜ワンピカ 予約・抽選・再販情報
 
   - handle: YuGiOh_OCG_INFO
     category: yugioh
@@ -52,11 +64,6 @@ accounts:
     category: beyblade
     tier: confirmed
     note: ベイブレード開発チーム公式
-
-  - handle: nikejapan
-    category: nike
-    tier: confirmed
-    note: Nike Japan
 
   - handle: GSHOCK_OFFICIAL
     category: watch
@@ -86,6 +93,10 @@ accounts:
   - handle: Meisy_TCG_News
     category: null
     tier: auto_judgment
+  - handle: AfroTCG
+    category: null
+    tier: auto_judgment
+    note: アフロくま トレカ抽選情報（複数TCGを横断）
   - handle: cardchusen_com
     category: null
     tier: auto_judgment
