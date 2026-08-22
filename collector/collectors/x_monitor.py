@@ -58,6 +58,16 @@ def _first_url_entity(tweet: dict) -> str | None:
     return None
 
 
+def _photo_media_urls(tweet: dict) -> list[str]:
+    """ツイート添付の画像(告知カード画像等)URLを返す。動画/GIFは対象外。"""
+    media = ((tweet.get("extendedEntities") or {}).get("media")) or []
+    return [
+        m["media_url_https"]
+        for m in media
+        if m.get("type") == "photo" and m.get("media_url_https")
+    ]
+
+
 def _author_name(tweet: dict) -> str | None:
     return ((tweet.get("author") or {}).get("name")) or None
 
@@ -117,6 +127,7 @@ class XMonitorCollector(BaseCollector):
                         "official_link": _first_url_entity(tweet),
                         "author_name": _author_name(tweet),
                         "author_bio_url": _author_bio_url(tweet),
+                        "image_urls": _photo_media_urls(tweet),
                     }
                 )
         return rows
@@ -138,6 +149,7 @@ class XMonitorCollector(BaseCollector):
                     # ("X: @handle"のような便宜的な名前より実店舗/実運営名に近い)。
                     shop_name=row["author_name"] or f"X: @{row['handle']}",
                     shop_official_url=row["author_bio_url"],
+                    image_urls=row["image_urls"],
                     notes=row["text"],
                     category=row["category"],
                     # 発見元(ツイート自体)のURLは常にこちらへ固定する。

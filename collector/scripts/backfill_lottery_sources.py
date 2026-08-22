@@ -58,6 +58,15 @@ def _first_url_entity(tweet: dict) -> str | None:
     return None
 
 
+def _photo_media_urls(tweet: dict) -> list[str]:
+    media = ((tweet.get("extendedEntities") or {}).get("media")) or []
+    return [
+        m["media_url_https"]
+        for m in media
+        if m.get("type") == "photo" and m.get("media_url_https")
+    ]
+
+
 def main() -> None:
     if not ai_assist._ai_enabled():  # noqa: SLF001
         print("[error] ANTHROPIC_API_KEY / AI_ASSIST_API_KEY が未設定です")
@@ -97,7 +106,12 @@ def main() -> None:
             continue
 
         official_link = _first_url_entity(tweet)
-        extracted = ai_assist.extract_lottery_info(tweet.get("text", "")) or {}
+        extracted = (
+            ai_assist.extract_lottery_info(
+                tweet.get("text", ""), image_urls=_photo_media_urls(tweet)
+            )
+            or {}
+        )
         extracted_shop_name = extracted.get("shop_name")
 
         for row in rows:

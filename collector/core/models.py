@@ -52,6 +52,9 @@ class CollectedItem(BaseModel):
     shop_name: str
     shop_official_url: HttpUrl | None = None
     image_url: HttpUrl | None = None
+    # AI補助抽出に読ませる添付画像(告知画像等)。捏造厳禁のため本文に無い情報を
+    # AIが画像から読み取れた場合のみ反映する(候補への保存用。画像自体の保存はしない)。
+    image_urls: list[HttpUrl] = Field(default_factory=list)
 
     price: int | None = None
     retail_price: int | None = None

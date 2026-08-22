@@ -50,7 +50,9 @@ def promote_batch(limit: int = 5) -> None:
         text = raw_data.get("notes") or raw_data.get("product_name", "")
 
         try:
-            extracted = ai_assist.extract_lottery_info(text)
+            extracted = ai_assist.extract_lottery_info(
+                text, image_urls=raw_data.get("image_urls")
+            )
             if extracted is None:
                 print("[error] AI抽出が無効です(APIキー未設定)")
                 return

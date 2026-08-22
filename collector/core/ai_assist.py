@@ -103,8 +103,13 @@ SYSTEM_PROMPT = """あなたは日本語の抽選販売・先着販売・受注�
 
 与えられたテキスト（X/Twitterの投稿本文など）から、抽選/先着/受注販売の告知情報を抽出してください。
 
+添付画像がある場合、告知内容をまとめた画像(応募期間・当選発表日・価格等が
+記載されたカード状の告知画像)であることが多い。本文と同様に画像内の文字も
+読み取り、記載されている情報を抽出してよい。ただし不鮮明・判読不能な部分を
+推測で埋めることは禁止する。
+
 最重要ルール（絶対に守ること）:
-- テキストに明記されていない情報は絶対に推測・補完しない。不明な項目は必ず null にする
+- テキスト(および添付画像がある場合はその内容)に明記されていない情報は絶対に推測・補完しない。不明な項目は必ず null にする
 - 価格・日付・条件などを「だいたいこれくらいだろう」で埋めない
 - 抽選販売・先着販売・受注販売の告知として明確に関連性がない投稿（無関係な話題、他の抽選のRT、コラボ告知だが販売方式が書かれていない等）は is_relevant を false にする
 - pokemon/yugioh/onepiece/dragonball(トレーディングカードゲーム)カテゴリにおいて、対象商品が
@@ -135,9 +140,18 @@ def _ai_enabled() -> bool:
     return bool(_api_key())
 
 
-def extract_lottery_info(text: str, reference_date: datetime | None = None) -> dict[str, Any] | None:
-    """自由記述のテキストから抽選/先着/受注販売の構造化情報を抽出する。
+MAX_IMAGES_PER_REQUEST = 4
 
+
+def extract_lottery_info(
+    text: str,
+    reference_date: datetime | None = None,
+    image_urls: list[str] | None = None,
+) -> dict[str, Any] | None:
+    """自由記述のテキスト(+添付画像)から抽選/先着/受注販売の構造化情報を抽出する。
+
+    image_urls を渡すと、ツイート添付の告知画像等もあわせて読み取る
+    (応募期間等が画像側にしか書かれていないケースに対応するため)。
     AI_ASSIST_API_KEY / ANTHROPIC_API_KEY が未設定の場合は None を返す
     (呼び出し側でルールベースのフォールバックを行うか、処理をスキップする)。
     """
@@ -149,6 +163,18 @@ def extract_lottery_info(text: str, reference_date: datetime | None = None) -> d
     client = anthropic.Anthropic(api_key=_api_key())
     ref_date = reference_date or datetime.now(timezone.utc)
 
+    content: list[dict[str, Any]] = [
+        {
+            "type": "text",
+            "text": (
+                f"本日の日付: {ref_date.strftime('%Y-%m-%d')}\n\n"
+                f"テキスト:\n{text}"
+            ),
+        }
+    ]
+    for url in (image_urls or [])[:MAX_IMAGES_PER_REQUEST]:
+        content.append({"type": "image", "source": {"type": "url", "url": url}})
+
     response = client.messages.create(
         model=EXTRACTION_MODEL,
         max_tokens=1024,
@@ -159,15 +185,7 @@ def extract_lottery_info(text: str, reference_date: datetime | None = None) -> d
                 "schema": EXTRACTION_SCHEMA,
             }
         },
-        messages=[
-            {
-                "role": "user",
-                "content": (
-                    f"本日の日付: {ref_date.strftime('%Y-%m-%d')}\n\n"
-                    f"テキスト:\n{text}"
-                ),
-            }
-        ],
+        messages=[{"role": "user", "content": content}],
     )
 
     text_block = next((b for b in response.content if b.type == "text"), None)
