@@ -104,7 +104,9 @@ def promote_batch(limit: int = 5) -> None:
                     official_url=raw_data.get("shop_official_url"),
                 )
 
-            match = dedupe.match_product(product_name, category)
+            match = dedupe.match_product(
+                product_name, category, image_url=extracted.get("product_image_url")
+            )
 
             db.insert_lottery(
                 product_id=match.product_id,

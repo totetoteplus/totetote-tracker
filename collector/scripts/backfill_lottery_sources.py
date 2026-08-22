@@ -97,7 +97,9 @@ def main() -> None:
     shop_updated = 0
     dates_updated = 0
     status_updated = 0
+    image_updated = 0
     not_found = 0
+    product_image_cache: dict[str, str | None] = {}
 
     for tweet_id, rows in id_to_lottery.items():
         tweet = tweet_map.get(tweet_id)
@@ -143,10 +145,21 @@ def main() -> None:
                 status_updated += 1
                 print(f"  [status] {row['title'][:30]} {row['status']} -> {new_status}")
 
+            product_image_url = extracted.get("product_image_url")
+            product_id = row.get("product_id")
+            if product_image_url and product_id:
+                if product_id not in product_image_cache:
+                    product_image_cache[product_id] = db.get_product_image(product_id)
+                if not product_image_cache[product_id]:
+                    db.update_product_image(product_id, product_image_url)
+                    product_image_cache[product_id] = product_image_url
+                    image_updated += 1
+                    print(f"  [image] {row['title'][:30]} -> {product_image_url}")
+
     print(
         f"\n完了: url_updated={url_updated} shop_updated={shop_updated} "
         f"dates_updated={dates_updated} status_updated={status_updated} "
-        f"tweet_not_found={not_found}"
+        f"image_updated={image_updated} tweet_not_found={not_found}"
     )
 
 

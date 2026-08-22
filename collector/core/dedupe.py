@@ -41,16 +41,29 @@ def normalize_name(raw_name: str) -> str:
     return text.lower()
 
 
-def match_product(product_name: str, category: str | None = None) -> MatchResult:
-    """商品名(+カテゴリ)からproducts.idを解決する。JANは対象外(v1)。"""
+def match_product(
+    product_name: str,
+    category: str | None = None,
+    image_url: str | None = None,
+) -> MatchResult:
+    """商品名(+カテゴリ)からproducts.idを解決する。JANは対象外(v1)。
+
+    image_url が渡され、かつ既存商品にまだ画像が無い場合のみ補完する
+    (既にある画像を後発の低品質な画像で上書きしないため)。
+    """
     normalized = normalize_name(product_name)
     existing = db.find_product_by_normalized_name(normalized)
 
     if existing:
+        if image_url and not existing.get("image_url"):
+            db.update_product_image(existing["id"], image_url)
         return MatchResult(decision=MatchDecision.MATCHED, product_id=existing["id"])
 
     product_id = db.insert_product(
-        name=product_name, normalized_name=normalized, category=category
+        name=product_name,
+        normalized_name=normalized,
+        category=category,
+        image_url=image_url,
     )
     return MatchResult(decision=MatchDecision.NEW_PRODUCT, product_id=product_id)
 

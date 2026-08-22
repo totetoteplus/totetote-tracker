@@ -262,7 +262,7 @@ def find_product_by_normalized_name(normalized_name: str) -> dict[str, Any] | No
     try:
         res = (
             client.table("products")
-            .select("id")
+            .select("id, image_url")
             .eq("normalized_name", normalized_name)
             .limit(1)
             .execute()
@@ -274,14 +274,22 @@ def find_product_by_normalized_name(normalized_name: str) -> dict[str, Any] | No
 
 
 def insert_product(
-    name: str, normalized_name: str, category: str | None = None
+    name: str,
+    normalized_name: str,
+    category: str | None = None,
+    image_url: str | None = None,
 ) -> str:
     client = get_client()
     try:
         res = (
             client.table("products")
             .insert(
-                {"name": name, "normalized_name": normalized_name, "category": category}
+                {
+                    "name": name,
+                    "normalized_name": normalized_name,
+                    "category": category,
+                    "image_url": image_url,
+                }
             )
             .execute()
         )
@@ -291,6 +299,34 @@ def insert_product(
     if not res.data:
         raise DatabaseError(f"products insert returned no data for name={name}")
     return res.data[0]["id"]
+
+
+def get_product_image(product_id: str) -> str | None:
+    client = get_client()
+    try:
+        res = (
+            client.table("products")
+            .select("image_url")
+            .eq("id", product_id)
+            .limit(1)
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"products lookup failed for id={product_id}: {exc}") from exc
+
+    return res.data[0]["image_url"] if res.data else None
+
+
+def update_product_image(product_id: str, image_url: str) -> None:
+    client = get_client()
+    try:
+        client.table("products").update({"image_url": image_url}).eq(
+            "id", product_id
+        ).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"products image update failed for id={product_id}: {exc}"
+        ) from exc
 
 
 def list_lotteries_for_status_refresh() -> list[dict[str, Any]]:
@@ -336,7 +372,7 @@ def list_lotteries_full() -> list[dict[str, Any]]:
         res = (
             client.table("lotteries")
             .select(
-                "id, title, url, source_url, shop_id, status, "
+                "id, title, url, source_url, shop_id, product_id, status, "
                 "application_start, application_end, result_date, release_date"
             )
             .execute()

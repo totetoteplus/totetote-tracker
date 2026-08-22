@@ -23,7 +23,35 @@ from typing import Any
 
 EXTRACTION_MODEL = "claude-haiku-4-5"
 
-EXTRACTION_SCHEMA = {
+
+def _build_extraction_schema(num_images: int) -> dict[str, Any]:
+    """image_urls の枚数に応じて product_image_index の候補indexを絞ったスキーマを作る。"""
+    schema = json.loads(json.dumps(_EXTRACTION_SCHEMA_BASE))
+    if num_images > 0:
+        schema["properties"]["product_image_index"] = {
+            "anyOf": [
+                {"type": "integer", "enum": list(range(num_images))},
+                {"type": "null"},
+            ],
+            "description": (
+                "渡した画像のうち、商品そのものが画面の主役として写っている、"
+                "商品カタログ写真のようにクリーンな画像があれば、そのインデックス"
+                "(0始まり、渡した順)を返す。以下はすべて対象外とし、該当する画像が"
+                "無ければnull:\n"
+                "  - 文字だけの告知バナー・お知らせ見出し・ロゴのみの画像\n"
+                "  - 応募期間・当選発表・価格・購入条件などの説明文/日程表が"
+                "画像の大部分を占めるチラシ/ポスター型の告知画像"
+                "(商品写真が小さく挿入されているだけのものを含む)\n"
+                "  - 複数の異なる商品を並べた比較表・一覧画像\n"
+                "商品写真が画像の主要な構成要素であり、文字情報が最小限"
+                "(タイトルロゴ程度)の場合のみ選んでよい"
+            ),
+        }
+        schema["required"].append("product_image_index")
+    return schema
+
+
+_EXTRACTION_SCHEMA_BASE = {
     "type": "object",
     "properties": {
         "is_relevant": {
@@ -129,6 +157,11 @@ SYSTEM_PROMPT = """あなたは日本語の抽選販売・先着販売・受注�
   「当選発表」「注文期限」しか書かれておらず応募受付期間の記載が無い投稿
   (=既に応募が締め切られた後の当選者向け案内である可能性が高い)では、
   application_start/application_endは両方nullのままにする
+- product_image_index(渡された場合)は、商品カタログ写真のように商品自体が
+  主役として写っているクリーンな画像がある場合のみそのインデックスを返す。
+  告知文言だけのバナー画像・ロゴ画像に加えて、応募期間や価格等の説明文/日程表が
+  大部分を占める「チラシ/ポスター型」の告知画像(商品写真が小さく挿入されている
+  だけのものを含む)も商品写真としては選ばない
 """
 
 
@@ -172,7 +205,8 @@ def extract_lottery_info(
             ),
         }
     ]
-    for url in (image_urls or [])[:MAX_IMAGES_PER_REQUEST]:
+    used_images = (image_urls or [])[:MAX_IMAGES_PER_REQUEST]
+    for url in used_images:
         content.append({"type": "image", "source": {"type": "url", "url": url}})
 
     response = client.messages.create(
@@ -182,7 +216,7 @@ def extract_lottery_info(
         output_config={
             "format": {
                 "type": "json_schema",
-                "schema": EXTRACTION_SCHEMA,
+                "schema": _build_extraction_schema(len(used_images)),
             }
         },
         messages=[{"role": "user", "content": content}],
@@ -192,4 +226,13 @@ def extract_lottery_info(
     if text_block is None:
         return None
 
-    return json.loads(text_block.text)
+    result: dict[str, Any] = json.loads(text_block.text)
+
+    image_index = result.pop("product_image_index", None)
+    result["product_image_url"] = (
+        used_images[image_index]
+        if image_index is not None and 0 <= image_index < len(used_images)
+        else None
+    )
+
+    return result
