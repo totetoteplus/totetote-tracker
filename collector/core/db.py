@@ -330,18 +330,34 @@ def list_lotteries_basic() -> list[dict[str, Any]]:
 
 
 def list_lotteries_full() -> list[dict[str, Any]]:
-    """バックフィル用: url/source_url/shop_id/titleをまとめて取得する。"""
+    """バックフィル用: lotteriesの主要フィールドをまとめて取得する。"""
     client = get_client()
     try:
         res = (
             client.table("lotteries")
-            .select("id, title, url, source_url, shop_id")
+            .select(
+                "id, title, url, source_url, shop_id, status, "
+                "application_start, application_end, result_date, release_date"
+            )
             .execute()
         )
     except Exception as exc:  # noqa: BLE001
         raise DatabaseError(f"lotteries lookup failed: {exc}") from exc
 
     return res.data or []
+
+
+def update_lottery_fields(lottery_id: str, fields: dict[str, Any]) -> None:
+    """任意フィールドをまとめて更新する(バックフィル用の汎用関数)。"""
+    if not fields:
+        return
+    client = get_client()
+    try:
+        client.table("lotteries").update(fields).eq("id", lottery_id).execute()
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(
+            f"lotteries update failed for id={lottery_id}: {exc}"
+        ) from exc
 
 
 def update_lottery_shop(lottery_id: str, shop_id: str) -> None:

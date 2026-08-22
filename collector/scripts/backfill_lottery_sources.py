@@ -1,5 +1,5 @@
-"""既存lotteriesの url(抽選ページ) / shop_id(実施店舗) を、元ツイートをID指定で
-再取得して作り直す一回限りのバックフィル。
+"""既存lotteriesの url(抽選ページ) / shop_id(実施店舗) / 応募期間等の日時を、
+元ツイートをID指定で再取得してAI抽出をやり直す一回限りのバックフィル。
 
 backfill_lottery_urls.py は「直近ツイート一覧」しか見られず、そこから
 外れた古いツイートは復元できなかった。twitterapi.ioには特定ツイートIDを
@@ -9,6 +9,13 @@ backfill_lottery_urls.py は「直近ツイート一覧」しか見られず、�
 あわせて、まとめ/転売系アカウント由来のlotteriesについては、本文に
 投稿アカウントとは別の実施店舗名が明記されていればAI抽出で判定し、
 shop_idをその店舗に付け替える(本文に無ければ投稿アカウント自身のまま)。
+
+このスクリプトはai_assist.pyのプロンプト改善(「当選発表」「注文期限」を
+application_start/application_endと混同しないようにする修正)を既存データ
+にも反映するために追加した。改善前のプロンプトで抽出された行は、応募受付
+期間ではなく当選発表・注文期限の日時が誤ってapplication_start/endに
+入っているケースがあった(例: 応募は既に締切済みなのにstatus=openのまま
+表示される不具合)。
 
 使い方:
     python scripts/backfill_lottery_sources.py
@@ -28,7 +35,10 @@ load_dotenv()
 
 from core import ai_assist, db, dedupe  # noqa: E402
 from core.errors import CollectorError  # noqa: E402
+from core.status import compute_lottery_status  # noqa: E402
 from core.x_client import get_tweets_by_ids  # noqa: E402
+
+DATE_FIELDS = ("application_start", "application_end", "result_date", "release_date")
 
 
 def _tweet_id_from_url(url: str) -> str | None:
@@ -76,6 +86,8 @@ def main() -> None:
 
     url_updated = 0
     shop_updated = 0
+    dates_updated = 0
+    status_updated = 0
     not_found = 0
 
     for tweet_id, rows in id_to_lottery.items():
@@ -85,8 +97,8 @@ def main() -> None:
             continue
 
         official_link = _first_url_entity(tweet)
-        extracted = ai_assist.extract_lottery_info(tweet.get("text", ""))
-        extracted_shop_name = (extracted or {}).get("shop_name")
+        extracted = ai_assist.extract_lottery_info(tweet.get("text", "")) or {}
+        extracted_shop_name = extracted.get("shop_name")
 
         for row in rows:
             if official_link and row["url"] != official_link:
@@ -101,8 +113,25 @@ def main() -> None:
                     shop_updated += 1
                     print(f"  [shop] {row['title'][:30]} -> {extracted_shop_name}")
 
+            date_changes = {
+                f: extracted.get(f) for f in DATE_FIELDS if extracted.get(f) != row.get(f)
+            }
+            if date_changes:
+                db.update_lottery_fields(row["id"], date_changes)
+                dates_updated += 1
+                print(f"  [dates] {row['title'][:30]} -> {date_changes}")
+
+            new_start = date_changes.get("application_start", row.get("application_start"))
+            new_end = date_changes.get("application_end", row.get("application_end"))
+            new_status = compute_lottery_status(new_start, new_end)
+            if new_status != row["status"]:
+                db.update_lottery_status(row["id"], new_status)
+                status_updated += 1
+                print(f"  [status] {row['title'][:30]} {row['status']} -> {new_status}")
+
     print(
         f"\n完了: url_updated={url_updated} shop_updated={shop_updated} "
+        f"dates_updated={dates_updated} status_updated={status_updated} "
         f"tweet_not_found={not_found}"
     )
 

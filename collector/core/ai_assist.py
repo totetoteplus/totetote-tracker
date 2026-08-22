@@ -51,10 +51,27 @@ EXTRACTION_SCHEMA = {
         "price": {"type": ["integer", "null"]},
         "application_start": {
             "type": ["string", "null"],
-            "description": "ISO8601形式の日時 (例: 2026-08-17T11:00:00+09:00)。時刻不明なら日付のみ",
+            "description": (
+                "応募(抽選申込)の受付が始まる日時。ISO8601形式 "
+                "(例: 2026-08-17T11:00:00+09:00)。時刻不明なら日付のみ。"
+                "「当選発表」「注文期限」「購入期限」等、応募受付とは別のイベントの"
+                "日時をここに入れない"
+            ),
         },
-        "application_end": {"type": ["string", "null"]},
-        "result_date": {"type": ["string", "null"]},
+        "application_end": {
+            "type": ["string", "null"],
+            "description": (
+                "応募(抽選申込)の受付が終わる日時。「当選発表日時」(result_date)や"
+                "「当選者向けの注文期限・購入期限」とは別物であり、混同しないこと。"
+                "本文に応募受付終了の日時が書かれていなければnull"
+                "(注文期限しか書かれていない投稿は多くの場合、応募自体は既に締め切られた"
+                "後の当選者向け案内である)"
+            ),
+        },
+        "result_date": {
+            "type": ["string", "null"],
+            "description": "当選発表・抽選結果発表の日時",
+        },
         "release_date": {"type": ["string", "null"]},
         "conditions": {
             "type": ["string", "null"],
@@ -94,6 +111,14 @@ SYSTEM_PROMPT = """あなたは日本語の抽選販売・先着販売・受注�
 - sale_type は「抽選」なら lottery、「先着」「くじ」なら firstcome、「受注」「予約」なら backorder。判断できなければ null
 - shop_name は、本文中に投稿アカウント自身とは異なる実施店舗名が明記されている場合のみ抽出する。
   店舗名を投稿アカウント名から推測したり、一般的な知識で補ったりしない
+- 日時には複数の種類があり、絶対に混同しないこと:
+    - application_start/application_end = 応募(抽選申込)の受付期間
+    - result_date = 当選発表・抽選結果発表の日時
+    - 当選者向けの「注文期限」「購入期限」「受け取り期限」は上記いずれにも該当しないため、
+      application_start/application_end/result_dateのどれにも入れない
+  「当選発表」「注文期限」しか書かれておらず応募受付期間の記載が無い投稿
+  (=既に応募が締め切られた後の当選者向け案内である可能性が高い)では、
+  application_start/application_endは両方nullのままにする
 """
 
 
