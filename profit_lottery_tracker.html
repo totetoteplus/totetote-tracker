@@ -287,11 +287,11 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月23日 06:11（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月24日 06:18（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
-    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月23日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。右端の「𝕏文章」ボタンで、Xに投稿できる告知文を自動生成できます（@sedokoX さんの投稿スタイルを参考にしたフォーマットです）。期間・当選発表が未確認の項目は「未定（抽選ページでご確認ください）」と表示されますので、投稿前に必ず抽選ページで実際の情報をご確認・補完してください。
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月24日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。右端の「𝕏文章」ボタンで、Xに投稿できる告知文を自動生成できます（@sedokoX さんの投稿スタイルを参考にしたフォーマットです）。期間・当選発表が未確認の項目は「未定（抽選ページでご確認ください）」と表示されますので、投稿前に必ず抽選ページで実際の情報をご確認・補完してください。
   </div>
 
   <div class="toolbar">
@@ -737,17 +737,18 @@ const ITEMS = [
     category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
     name:"ONE PIECEカードゲーム プレミアムカードコレクション -ONE PIECE DAY'26-",
     store:"プレミアムバンダイ（抽選販売）",
-    period:"抽選受付中 8月22日(土)〜（締切は未確認）",
+    period:"抽選受付中 8月22日(土)13:00〜9月7日(月)23:00",
     periodStart:"2026-08-22",
-    status:"open", statusText:"受付中（締切未確認）",
-    lotteryPrice:null,
+    deadline:"2026-09-07",
+    status:"open", statusText:"受付中（〆切9/7）",
+    lotteryPrice:990,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足",
-    note:"ONE PIECE DAY'26会場では販売されず、プレミアムバンダイでの抽選販売のみ。内容は「モンキー・D・ルフィ」プロモカード（P-161）＋新規DON!!カード（複数の海外物販サイト・公式系Xアカウントで型番がP-161と一致確認。P-110は2025年のONE PIECE DAY'25用の別カードで無関係と判明）。価格・締切・p-bandai.jp商品ページURLは未確認",
+    dataStatus:"insufficient", confidence:"中（複数の独立ソースが応募期間・価格で一致するが、公式ページ(p-bandai.jp)は本セッションのネットワーク制限により直接確認できず）",
+    note:"ONE PIECE DAY'26会場では販売されず、プレミアムバンダイでの抽選販売のみ。内容は「モンキー・D・ルフィ」プロモカード（P-161）＋新規DON!!カード（複数の海外物販サイト・公式系Xアカウントで型番がP-161と一致確認。P-110は2025年のONE PIECE DAY'25用の別カードで無関係と判明）。1人1個まで。発送11月予定、当選発表9月中旬予定。p-bandai.jp商品ページURLは未確認",
     lotteryUrl:null,
     sourceUrl:"https://www.oricon.co.jp/news/2468332/full/",
-    applyPeriod:null,
-    announceDate:null,
+    applyPeriod:"8月22日(土)13:00〜9月7日(月)23:00",
+    announceDate:"9月中旬予定",
     saleType:"lottery"
   },
   {
@@ -1134,11 +1135,11 @@ const ITEMS = [
     periodStart:"2026-08-22",
     status:"open", statusText:"発売中（店頭8/22〜、オンラインは8/24〜）",
     lotteryPrice:790,
-    resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足",
-    note:"発売前のため転売相場データなし。ラストワン賞「THE GIGANT NAME」は当選50個限定。ダブルチャンスキャンペーンは発売日〜11月末まで実施予定",
+    resaleLow:9000, resaleHigh:18888,
+    dataStatus:"reference", confidence:"低（発売翌日のブログ速報記事のスニペット情報。フリマ出品額ベースで確定売買データではなく、A・B賞のみの情報）",
+    note:"発売初日〜翌日のメルカリ速報：A賞(超サイヤ人4孫悟空)18,000〜18,888円、B賞(超サイヤ人4ベジータ)13,400〜14,700円（買取相場はそれぞれ10,500〜15,000円、9,000〜13,000円）。ラストワン賞「THE GIGANT NAME」は当選50個限定。ダブルチャンスキャンペーンは発売日〜11月末まで実施予定",
     lotteryUrl:"https://1kuji.com/products/db_gt",
-    sourceUrl:null,
+    sourceUrl:"https://meli-melo.blog.jp/archives/1083727017.html",
     applyPeriod:null,
     announceDate:null,
     saleType:"firstcome"
@@ -1724,6 +1725,62 @@ const ITEMS = [
     note:"TVアニメ最終クール『BLEACH 千年血戦篇-禍進譚-』の姿を立体化。B賞 日番谷冬獅郎、C賞 四楓院夜一、ラストワン賞 更木剣八（いずれもMASTERLISEフィギュア）。A賞・D賞〜H賞は本稿時点で詳細未公開",
     lotteryUrl:"https://1kuji.com/products/bleach8",
     sourceUrl:"https://convenicheck.com/newitem/newit_seven/132926/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"pk-30th-surugaya",
+    category:"pokemon", categoryLabel:"ポケモンカード", icon:"🔴",
+    name:"ポケモンカードゲームMEGA 拡張パック「30th CELEBRATION」購入抽選（駿河屋）",
+    store:"駿河屋（通販抽選）",
+    period:"応募期間 8月20日(木)〜9月6日(日)23:59（当選発表9/7予定、購入期間9/7〜9/11予定）",
+    periodStart:"2026-08-20",
+    deadline:"2026-09-06",
+    status:"open", statusText:"受付中（〆切9/6）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（価格・商品ページURL未確認）",
+    note:"応募方法はX（@surugaya_toreka）フォロー＋リポスト＋専用フォームでの応募ID記載形式。価格・具体的な応募URLは未確認のため、応募前に駿河屋公式サイトでのご確認を推奨します",
+    lotteryUrl:"https://www.suruga-ya.jp/chuusenhanbai/",
+    sourceUrl:null,
+    applyPeriod:"8月20日(木)〜9月6日(日)23:59",
+    announceDate:"9月7日(月)予定（購入期間9/7〜9/11予定）",
+    saleType:"lottery"
+  },
+  {
+    id:"nike-aj12-sumo",
+    category:"nike", categoryLabel:"Nike", icon:"⚪",
+    name:"Air Jordan 12 Retro \"Sumo\"（日本限定・IW1218-098）",
+    store:"atmos（ウェブ抽選）",
+    period:"ウェブ抽選 8月14日(金)18:00〜8月21日(金)8:59",
+    periodStart:"2026-08-14",
+    closedOn:"2026-08-21",
+    status:"closed", statusText:"受付終了・発売済み（当選発表8/23）",
+    lotteryPrice:34100,
+    resaleLow:55000, resaleHigh:55000,
+    dataStatus:"reference", confidence:"低（スニーカーダンク単一記事の即決価格情報、発売直後のため変動大）",
+    note:"日本限定モデル。当選発表8月23日(日)9:00、発売8月23日(日)",
+    lotteryUrl:"https://www.atmos-tokyo.com/lp/jordan-brand-air-jordan-12-retro-sumo",
+    sourceUrl:"https://snkrdunk.com/articles/33039/",
+    applyPeriod:"8月14日(金)18:00〜8月21日(金)8:59",
+    announceDate:"8月23日(日)9:00",
+    saleType:"lottery"
+  },
+  {
+    id:"ichibankuji-gakuenidolmaster-part6",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ 学園アイドルマスター Part6",
+    store:"ローソン ほか／一番くじONLINE",
+    period:"発売 9月19日(土)〜順次予定（オンライン開始日時は要確認）",
+    periodStart:"2026-09-19",
+    status:"soon", statusText:"受付前（9/19発売予定）",
+    lotteryPrice:850,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
+    note:"フィギュア賞：有村麻央・倉本千奈・篠澤広の「1/7 Gracemaster」フィギュア。ほかメタリックポスター、きららいずマスコット、オリジナルバンダナタオル、ラバーチャーム、アクリルスタンド等",
+    lotteryUrl:"https://1kuji.com/products/gkmas06",
+    sourceUrl:"https://hobby.dengeki.com/news/2980164/",
     applyPeriod:null,
     announceDate:null,
     saleType:"firstcome"
