@@ -179,28 +179,19 @@ def _ai_enabled() -> bool:
     return bool(_api_key())
 
 
-MAX_IMAGES_PER_REQUEST = 4
+# Xの添付画像は最大4枚まで付くが、実際に有用な情報が追加で得られるのは
+# ほぼ1〜2枚目までのため、コスト抑制のため2枚までに制限する。
+MAX_IMAGES_PER_REQUEST = 2
+
+DATE_LIKE_FIELDS = ("application_start", "application_end", "result_date")
 
 
-def extract_lottery_info(
-    text: str,
-    reference_date: datetime | None = None,
-    image_urls: list[str] | None = None,
+def _call_extraction(
+    text: str, ref_date: datetime, image_urls: list[str]
 ) -> dict[str, Any] | None:
-    """自由記述のテキスト(+添付画像)から抽選/先着/受注販売の構造化情報を抽出する。
-
-    image_urls を渡すと、ツイート添付の告知画像等もあわせて読み取る
-    (応募期間等が画像側にしか書かれていないケースに対応するため)。
-    AI_ASSIST_API_KEY / ANTHROPIC_API_KEY が未設定の場合は None を返す
-    (呼び出し側でルールベースのフォールバックを行うか、処理をスキップする)。
-    """
-    if not _ai_enabled():
-        return None
-
     import anthropic
 
     client = anthropic.Anthropic(api_key=_api_key())
-    ref_date = reference_date or datetime.now(timezone.utc)
 
     content: list[dict[str, Any]] = [
         {
@@ -211,18 +202,25 @@ def extract_lottery_info(
             ),
         }
     ]
-    used_images = (image_urls or [])[:MAX_IMAGES_PER_REQUEST]
-    for url in used_images:
+    for url in image_urls:
         content.append({"type": "image", "source": {"type": "url", "url": url}})
 
     response = client.messages.create(
         model=EXTRACTION_MODEL,
         max_tokens=1024,
-        system=SYSTEM_PROMPT,
+        # システムプロンプトは全呼び出しで共通のため、プロンプトキャッシュで
+        # 入力トークン代を抑える(2回目以降のヒットで当該分がほぼ無料になる)。
+        system=[
+            {
+                "type": "text",
+                "text": SYSTEM_PROMPT,
+                "cache_control": {"type": "ephemeral"},
+            }
+        ],
         output_config={
             "format": {
                 "type": "json_schema",
-                "schema": _build_extraction_schema(len(used_images)),
+                "schema": _build_extraction_schema(len(image_urls)),
             }
         },
         messages=[{"role": "user", "content": content}],
@@ -236,9 +234,49 @@ def extract_lottery_info(
 
     image_index = result.pop("product_image_index", None)
     result["product_image_url"] = (
-        used_images[image_index]
-        if image_index is not None and 0 <= image_index < len(used_images)
+        image_urls[image_index]
+        if image_index is not None and 0 <= image_index < len(image_urls)
         else None
     )
 
     return result
+
+
+def extract_lottery_info(
+    text: str,
+    reference_date: datetime | None = None,
+    image_urls: list[str] | None = None,
+) -> dict[str, Any] | None:
+    """自由記述のテキスト(+添付画像)から抽選/先着/受注販売の構造化情報を抽出する。
+
+    コスト抑制のため2段階で処理する:
+      1. まずテキストのみで抽出する(画像なしなので安価)。
+      2. 関連性ありと判定され、かつ応募期間/当選発表日が本文からは一切
+         判明しなかった場合に限り、画像も添えて再抽出する(応募期間等が
+         画像側にしか書かれていないケースの取りこぼしを防ぐ)。
+    テキストだけで十分な情報が取れた投稿(=大半)は1回の安価な呼び出しで
+    完結し、画像込みの2回目呼び出しは本当に必要な場合だけ発生する。
+
+    AI_ASSIST_API_KEY / ANTHROPIC_API_KEY が未設定の場合は None を返す
+    (呼び出し側でルールベースのフォールバックを行うか、処理をスキップする)。
+    """
+    if not _ai_enabled():
+        return None
+
+    ref_date = reference_date or datetime.now(timezone.utc)
+
+    text_only_result = _call_extraction(text, ref_date, image_urls=[])
+    if text_only_result is None:
+        return None
+
+    used_images = (image_urls or [])[:MAX_IMAGES_PER_REQUEST]
+    needs_image_pass = (
+        used_images
+        and text_only_result.get("is_relevant")
+        and not any(text_only_result.get(f) for f in DATE_LIKE_FIELDS)
+    )
+    if not needs_image_pass:
+        return text_only_result
+
+    image_result = _call_extraction(text, ref_date, image_urls=used_images)
+    return image_result if image_result is not None else text_only_result
