@@ -24,6 +24,26 @@ from typing import Any
 EXTRACTION_MODEL = "claude-haiku-4-5"
 
 
+PRODUCT_IMAGE_INDEX_DESCRIPTION = (
+    "渡した画像のうち、商品そのものが画面の主役として写っている、"
+    "商品カタログ写真のようにクリーンな画像があれば、そのインデックス"
+    "(0始まり、渡した順)を返す。以下はすべて対象外とし、該当する画像が"
+    "無ければnull:\n"
+    "  - 文字だけの告知バナー・お知らせ見出し・ロゴのみの画像\n"
+    "  - 応募期間・当選発表・価格・購入条件などの説明文/日程表が"
+    "画像の大部分を占めるチラシ/ポスター型の告知画像"
+    "(商品写真が小さく挿入されているだけのものを含む)\n"
+    "  - 複数の異なる商品を並べた比較表・一覧画像\n"
+    "  - 色付きの見出しバナー(店舗名+「限定抽選会」等の帯)や日程表が"
+    "画像内にひとつでも存在する画像。この種の画像は商品写真が"
+    "画像の半分以上を占めていても対象外とする(商品写真部分だけを"
+    "切り出すことはできないため)\n"
+    "選んでよいのは、商品(パッケージ/BOX/フィギュア等)の写真のみで"
+    "画面のほぼ全体が構成されており、文字情報が商品名・ロゴ程度に"
+    "限られる画像だけ"
+)
+
+
 def _build_extraction_schema(num_images: int) -> dict[str, Any]:
     """image_urls の枚数に応じて product_image_index の候補indexを絞ったスキーマを作る。"""
     schema = json.loads(json.dumps(_EXTRACTION_SCHEMA_BASE))
@@ -33,24 +53,7 @@ def _build_extraction_schema(num_images: int) -> dict[str, Any]:
                 {"type": "integer", "enum": list(range(num_images))},
                 {"type": "null"},
             ],
-            "description": (
-                "渡した画像のうち、商品そのものが画面の主役として写っている、"
-                "商品カタログ写真のようにクリーンな画像があれば、そのインデックス"
-                "(0始まり、渡した順)を返す。以下はすべて対象外とし、該当する画像が"
-                "無ければnull:\n"
-                "  - 文字だけの告知バナー・お知らせ見出し・ロゴのみの画像\n"
-                "  - 応募期間・当選発表・価格・購入条件などの説明文/日程表が"
-                "画像の大部分を占めるチラシ/ポスター型の告知画像"
-                "(商品写真が小さく挿入されているだけのものを含む)\n"
-                "  - 複数の異なる商品を並べた比較表・一覧画像\n"
-                "  - 色付きの見出しバナー(店舗名+「限定抽選会」等の帯)や日程表が"
-                "画像内にひとつでも存在する画像。この種の画像は商品写真が"
-                "画像の半分以上を占めていても対象外とする(商品写真部分だけを"
-                "切り出すことはできないため)\n"
-                "選んでよいのは、商品(パッケージ/BOX/フィギュア等)の写真のみで"
-                "画面のほぼ全体が構成されており、文字情報が商品名・ロゴ程度に"
-                "限られる画像だけ"
-            ),
+            "description": PRODUCT_IMAGE_INDEX_DESCRIPTION,
         }
         schema["required"].append("product_image_index")
     return schema
@@ -240,6 +243,70 @@ def _call_extraction(
     )
 
     return result
+
+
+_IMAGE_ONLY_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "product_image_index": {
+            "anyOf": [{"type": "integer"}, {"type": "null"}],
+            "description": PRODUCT_IMAGE_INDEX_DESCRIPTION,
+        },
+    },
+    "required": ["product_image_index"],
+    "additionalProperties": False,
+}
+
+
+def extract_product_image(text: str, image_urls: list[str]) -> str | None:
+    """添付画像から商品写真として使えるものだけを軽量に判定する(商品画像ストック用)。
+
+    products.image_url が既に設定されている商品には呼ばない想定
+    (同じ商品なら既存画像を使い回し、未取得の商品でだけ新たに取得する)。
+    extract_lottery_info本体のフル抽出より小さいスキーマ・トークン数で
+    呼び出せるため、商品画像だけが目的の場合はこちらの方が安価。
+    """
+    if not _ai_enabled() or not image_urls:
+        return None
+
+    import anthropic
+
+    client = anthropic.Anthropic(api_key=_api_key())
+
+    used_images = image_urls[:MAX_IMAGES_PER_REQUEST]
+    content: list[dict[str, Any]] = [{"type": "text", "text": f"テキスト:\n{text}"}]
+    for url in used_images:
+        content.append({"type": "image", "source": {"type": "url", "url": url}})
+
+    schema = json.loads(json.dumps(_IMAGE_ONLY_SCHEMA))
+    schema["properties"]["product_image_index"]["anyOf"][0]["enum"] = list(
+        range(len(used_images))
+    )
+
+    response = client.messages.create(
+        model=EXTRACTION_MODEL,
+        max_tokens=64,
+        system=[
+            {
+                "type": "text",
+                "text": (
+                    "あなたはXの投稿から商品写真を選ぶアシスタントです。"
+                    "推測で埋めず、該当が無ければnullを返してください。"
+                ),
+                "cache_control": {"type": "ephemeral"},
+            }
+        ],
+        output_config={"format": {"type": "json_schema", "schema": schema}},
+        messages=[{"role": "user", "content": content}],
+    )
+
+    text_block = next((b for b in response.content if b.type == "text"), None)
+    if text_block is None:
+        return None
+
+    result = json.loads(text_block.text)
+    index = result.get("product_image_index")
+    return used_images[index] if index is not None and 0 <= index < len(used_images) else None
 
 
 def extract_lottery_info(

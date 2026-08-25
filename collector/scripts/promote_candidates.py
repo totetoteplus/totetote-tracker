@@ -113,6 +113,17 @@ def promote_batch(limit: int = 5) -> None:
                 product_name, category, image_url=extracted.get("product_image_url")
             )
 
+            # 商品画像のストック: 既に画像がある商品(=同じ商品名で既出)は使い回し、
+            # まだ無い商品(新規、またはこれまで画像が取れていなかった商品)の場合のみ
+            # 軽量な画像専用抽出を追加で1回だけ呼ぶ(フル抽出より安価)。
+            if not extracted.get("product_image_url") and raw_data.get("image_urls"):
+                if not db.get_product_image(match.product_id):
+                    product_image_url = ai_assist.extract_product_image(
+                        text, raw_data["image_urls"]
+                    )
+                    if product_image_url:
+                        db.update_product_image(match.product_id, product_image_url)
+
             db.insert_lottery(
                 product_id=match.product_id,
                 shop_id=shop_id,
