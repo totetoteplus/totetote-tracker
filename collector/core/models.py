@@ -90,6 +90,12 @@ class CollectedItem(BaseModel):
     # 満たしていても自動昇格を許可する（判定できなければ引き続き保留）。
     promote_if_category_known: bool = False
 
+    # True の場合、category は確定しているがアカウント自身は実施店舗ではない
+    # 「まとめ/情報アカウント」。アカウント自身の表示名をshopとして使うと
+    # 実在しない店舗を捏造することになるため、AI補助抽出で本文中の実施店舗名が
+    # 判定できた候補に限り自動昇格を許可する（判定できなければ引き続き保留）。
+    shop_name_required: bool = False
+
 
 class ChangeType(str, Enum):
     NEW_PRODUCT = "new_product"

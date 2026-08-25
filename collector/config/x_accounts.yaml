@@ -17,11 +17,15 @@
 #   複数カテゴリを横断するため category を固定できないアカウント用。
 #   AI補助抽出でツイート単位の category が判定できた候補に限り自動昇格を許可する
 #   （二次情報・まとめ/転売系アカウントには付けないこと）。
+#
+# shop_name_required: true
+#   auto_judgment のうち、対象カテゴリ(単一ゲーム)は確定しているが、
+#   アカウント自身は実施店舗ではない「まとめ/情報アカウント」用。
+#   このアカウント自身の表示名をshops.nameとして使うと実在しない店舗を
+#   捏造することになるため、ツイート本文から実施店舗名がAI抽出できた
+#   候補に限り自動昇格を許可する（店舗名が特定できない投稿はneeds_reviewのまま）。
 
 accounts:
-  - handle: PokeGetInfoMain
-    category: pokemon
-    tier: confirmed
   - handle: bic_sagamioono
     category: pokemon
     tier: confirmed
@@ -32,23 +36,34 @@ accounts:
   - handle: fc_machida
     category: pokemon
     tier: confirmed
-  - handle: pokecayoyaku
-    category: pokemon
-    tier: confirmed
-    note: ポケモンカード抽選予約速報
-  - handle: pokecachan
-    category: pokemon
-    tier: confirmed
-    note: ポケカ予約速報＠ポケモンカード情報
 
   - handle: ONEPIECEtcgSHOP
     category: onepiece
     tier: confirmed
     note: ONE PIECEカードゲーム公式ショップ
+
+  # --- まとめ/情報アカウント: カテゴリは確定しているが、アカウント自身は
+  # 実施店舗ではないため、本文から実施店舗名が判明した場合のみ自動昇格する ---
+  - handle: PokeGetInfoMain
+    category: pokemon
+    tier: auto_judgment
+    shop_name_required: true
+    note: ポケゲトちゃんねる（まとめアカウント、実施店舗ではない）
+  - handle: pokecayoyaku
+    category: pokemon
+    tier: auto_judgment
+    shop_name_required: true
+    note: ポケモンカード抽選予約速報（まとめアカウント）
+  - handle: pokecachan
+    category: pokemon
+    tier: auto_judgment
+    shop_name_required: true
+    note: ポケカ予約速報＠ポケモンカード情報（まとめアカウント）
   - handle: onepiecetcgnews
     category: onepiece
-    tier: confirmed
-    note: ワンピースカードまとめ｜ワンピカ 予約・抽選・再販情報
+    tier: auto_judgment
+    shop_name_required: true
+    note: ワンピースカードまとめ｜ワンピカ 予約・抽選・再販情報（まとめアカウント）
 
   - handle: YuGiOh_OCG_INFO
     category: yugioh

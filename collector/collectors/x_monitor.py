@@ -121,6 +121,9 @@ class XMonitorCollector(BaseCollector):
                         "official_multi_category": account.get(
                             "official_multi_category", False
                         ),
+                        "shop_name_required": account.get(
+                            "shop_name_required", False
+                        ),
                         "text": text,
                         "created_at": tweet.get("createdAt"),
                         "url": url,
@@ -158,6 +161,7 @@ class XMonitorCollector(BaseCollector):
                     source_method=SourceMethod.THIRD_PARTY_API,
                     needs_manual_review=(row["tier"] == "auto_judgment"),
                     promote_if_category_known=row["official_multi_category"],
+                    shop_name_required=row["shop_name_required"],
                 )
             )
         return items

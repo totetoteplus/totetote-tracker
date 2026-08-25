@@ -67,6 +67,7 @@ def promote_batch(limit: int = 5) -> None:
             promote_if_category_known = raw_data.get(
                 "promote_if_category_known", False
             )
+            shop_name_required = raw_data.get("shop_name_required", False)
             product_name = extracted.get("product_name") or raw_data.get(
                 "product_name", ""
             )
@@ -74,8 +75,12 @@ def promote_batch(limit: int = 5) -> None:
 
             # 情報源は公式(一次情報)だが複数カテゴリを横断するアカウントは、
             # AI抽出でカテゴリが判定できた場合に限り保留を解除して昇格させる。
+            # まとめ/情報アカウント(アカウント自身は実施店舗ではない)は、
+            # 本文から実施店舗名がAI抽出できた場合に限り保留を解除する
+            # (店舗名が特定できない投稿を、アカウント自身を店舗として公開しない)。
             still_needs_review = needs_manual_review and not (
-                promote_if_category_known and extracted.get("category")
+                (promote_if_category_known and extracted.get("category"))
+                or (shop_name_required and extracted.get("shop_name"))
             )
             if still_needs_review:
                 db.update_candidate_extraction(
