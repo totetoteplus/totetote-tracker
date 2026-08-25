@@ -23,12 +23,11 @@ tiers:
 collectors:
   # Phase 2 第一弾。twitterapi.io経由で複数Xアカウントを横断監視する。
   # 監視対象アカウント一覧は config/x_accounts.yaml を参照。
-  # ユーザー指定により、間隔tierではなく1日2回の固定時刻実行とする。
-  # 概算コスト: 2回 x 25アカウント = 50コール/日 ≒ 月1,500コール
-  # （twitterapi.io ツイート課金 約$0.15/1,000件のため、月1ドル未満の見込み）。
+  # ユーザー指定により、間隔tierではなく1日1回の固定時刻実行とする
+  # (2026-08-27付でコスト抑制のため1日2回から変更)。
   - source_key: x_monitor
     schedule:
       type: fixed_times
-      times: ["06:00", "18:00"]
+      times: ["06:00"]
       timezone: Asia/Tokyo
     enabled: true
