@@ -335,6 +335,77 @@ def extract_product_image(text: str, image_urls: list[str]) -> str | None:
     return used_images[index] if index is not None and 0 <= index < len(used_images) else None
 
 
+_PRODUCT_MATCH_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "matched_index": {
+            "anyOf": [{"type": "integer"}, {"type": "null"}],
+            "description": (
+                "new_nameが、candidatesのいずれかとまったく同じ商品(同じ構成物・"
+                "同じ型番/レアリティ)を指している場合のみ、そのインデックス"
+                "(0始まり)を返す。表記ゆれ(括弧の種類・区切り記号・語順・"
+                "店舗ごとの言い回し)は同一商品とみなしてよいが、MEGA版か通常版か、"
+                "単品かセットか、含まれるアイテムの構成が違う場合は別商品として"
+                "扱う。同一と断定できない場合は必ずnull(推測で統合しない)"
+            ),
+        },
+    },
+    "required": ["matched_index"],
+    "additionalProperties": False,
+}
+
+
+def match_product_name(new_name: str, candidates: list[str]) -> int | None:
+    """新規商品名候補が既存商品名のいずれかと同一商品かをAIに判定させる。
+
+    core.dedupe.match_product() の完全一致dedupeで一致しなかった場合の
+    第二段判定。同一シリーズの商品が投稿ごとの表記ゆれ(括弧の種類・区切り
+    記号・語順違い等)で商品が何行にも分裂してしまう問題(例: 「30th
+    CELEBRATION」関連投稿が34行に分裂していた)に対応するため追加した。
+    確信が持てない場合は必ずNoneを返す前提のプロンプトにしてあるため、
+    この関数がNoneを返した場合は新規商品として扱ってよい(誤統合より
+    表記ゆれ重複の方が実害が小さいため、迷ったら統合しない側に倒す)。
+    """
+    if not _ai_enabled() or not candidates:
+        return None
+
+    import anthropic
+
+    client = anthropic.Anthropic(api_key=_api_key())
+
+    candidate_list = "\n".join(f"{i}: {c}" for i, c in enumerate(candidates))
+    response = client.messages.create(
+        model=EXTRACTION_MODEL,
+        max_tokens=32,
+        system=[
+            {
+                "type": "text",
+                "text": (
+                    "あなたは商品カタログの名寄せ判定アシスタントです。"
+                    "推測で統合せず、同一商品と断定できない場合はnullを返して"
+                    "ください。"
+                ),
+                "cache_control": {"type": "ephemeral"},
+            }
+        ],
+        output_config={"format": {"type": "json_schema", "schema": _PRODUCT_MATCH_SCHEMA}},
+        messages=[
+            {
+                "role": "user",
+                "content": f"新しい商品名:\n{new_name}\n\n既存候補:\n{candidate_list}",
+            }
+        ],
+    )
+
+    text_block = next((b for b in response.content if b.type == "text"), None)
+    if text_block is None:
+        return None
+
+    result = json.loads(text_block.text)
+    index = result.get("matched_index")
+    return index if index is not None and 0 <= index < len(candidates) else None
+
+
 def extract_lottery_info(
     text: str,
     reference_date: datetime | None = None,

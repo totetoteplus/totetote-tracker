@@ -262,7 +262,7 @@ def find_product_by_normalized_name(normalized_name: str) -> dict[str, Any] | No
     try:
         res = (
             client.table("products")
-            .select("id, image_url")
+            .select("id, name, image_url")
             .eq("normalized_name", normalized_name)
             .limit(1)
             .execute()
@@ -299,6 +299,24 @@ def insert_product(
     if not res.data:
         raise DatabaseError(f"products insert returned no data for name={name}")
     return res.data[0]["id"]
+
+
+def list_products_by_category(category: str, limit: int = 40) -> list[dict[str, Any]]:
+    """dedupe用: 同カテゴリの既存商品(直近更新順)を返す(AI名寄せ判定の候補集合)。"""
+    client = get_client()
+    try:
+        res = (
+            client.table("products")
+            .select("id, name, image_url")
+            .eq("category", category)
+            .order("updated_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"products lookup failed for category={category}: {exc}") from exc
+
+    return res.data or []
 
 
 def get_product_image(product_id: str) -> str | None:

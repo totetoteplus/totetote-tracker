@@ -20,7 +20,7 @@ import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 
-from core import db
+from core import ai_assist, db
 
 
 class MatchDecision(str, Enum):
@@ -32,6 +32,9 @@ class MatchDecision(str, Enum):
 class MatchResult:
     decision: MatchDecision
     product_id: str | None = None
+    # MATCHED時のみ設定。既存商品の正式名称(表記ゆれ統一の基準名)。
+    # lotteries.title を投稿ごとの表記ゆれではなく、この名称に揃えるために使う。
+    matched_name: str | None = None
 
 
 def normalize_name(raw_name: str) -> str:
@@ -39,6 +42,18 @@ def normalize_name(raw_name: str) -> str:
     text = unicodedata.normalize("NFKC", raw_name)
     text = re.sub(r"\s+", " ", text).strip()
     return text.lower()
+
+
+_TOKEN_SEP_RE = re.compile(r"[「」『』()（）、,・/／\s]+")
+
+
+def _significant_tokens(name: str) -> set[str]:
+    """AI名寄せ判定を呼ぶ価値があるかの粗い事前フィルタ用トークン集合。
+
+    3文字未満の断片(「BOX」等の非常に一般的な語含む)は誤検出が多いため除外する。
+    """
+    text = unicodedata.normalize("NFKC", name).lower()
+    return {t for t in _TOKEN_SEP_RE.split(text) if len(t) >= 3}
 
 
 def match_product(
@@ -50,6 +65,13 @@ def match_product(
 
     image_url が渡され、かつ既存商品にまだ画像が無い場合のみ補完する
     (既にある画像を後発の低品質な画像で上書きしないため)。
+
+    完全一致で見つからない場合、同カテゴリ内でキーワードが重なる既存商品が
+    あればAIに「本当に同一商品か」を判定させる(第二段判定)。人気シリーズの
+    発売告知は投稿ごとの表記ゆれ(括弧の種類・区切り記号・語順違い)で同じ
+    商品が何行にも分裂しがちなため(例: 「30th CELEBRATION」関連投稿が
+    34商品に分裂していた事例)。確信が持てない場合はAI側が必ずnullを返す
+    前提なので、誤って別商品を統合してしまうリスクは小さい。
     """
     normalized = normalize_name(product_name)
     existing = db.find_product_by_normalized_name(normalized)
@@ -57,7 +79,32 @@ def match_product(
     if existing:
         if image_url and not existing.get("image_url"):
             db.update_product_image(existing["id"], image_url)
-        return MatchResult(decision=MatchDecision.MATCHED, product_id=existing["id"])
+        return MatchResult(
+            decision=MatchDecision.MATCHED,
+            product_id=existing["id"],
+            matched_name=existing.get("name"),
+        )
+
+    if category:
+        new_tokens = _significant_tokens(product_name)
+        candidates = [
+            c
+            for c in db.list_products_by_category(category)
+            if new_tokens & _significant_tokens(c["name"])
+        ]
+        if candidates:
+            idx = ai_assist.match_product_name(
+                product_name, [c["name"] for c in candidates]
+            )
+            if idx is not None:
+                matched = candidates[idx]
+                if image_url and not matched.get("image_url"):
+                    db.update_product_image(matched["id"], image_url)
+                return MatchResult(
+                    decision=MatchDecision.MATCHED,
+                    product_id=matched["id"],
+                    matched_name=matched.get("name"),
+                )
 
     product_id = db.insert_product(
         name=product_name,

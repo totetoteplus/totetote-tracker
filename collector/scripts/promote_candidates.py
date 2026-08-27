@@ -124,10 +124,15 @@ def promote_batch(limit: int = 5) -> None:
                     if product_image_url:
                         db.update_product_image(match.product_id, product_image_url)
 
+            # 既存商品に一致した場合は、投稿ごとの表記ゆれではなく登録済みの
+            # 正式名称でタイトルを揃える(表記統一。例: 「30th CELEBRATION」
+            # 関連投稿が店舗ごとに違う言い回しで並んでしまう問題への対応)。
+            lottery_title = match.matched_name or product_name
+
             db.insert_lottery(
                 product_id=match.product_id,
                 shop_id=shop_id,
-                title=product_name,
+                title=lottery_title,
                 sale_type=extracted.get("sale_type"),
                 url=official_page_url,
                 application_start=extracted.get("application_start"),
