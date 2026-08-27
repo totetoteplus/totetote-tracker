@@ -420,6 +420,63 @@ def update_lottery_status(lottery_id: str, status: str) -> None:
         ) from exc
 
 
+def list_listings_basic() -> list[dict[str, Any]]:
+    """バックフィル用: product_id/shop_id/url/retail_priceだけをまとめて取得する。"""
+    client = get_client()
+    try:
+        res = (
+            client.table("listings")
+            .select("id, product_id, shop_id, url, retail_price")
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"listings lookup failed: {exc}") from exc
+
+    return res.data or []
+
+
+def upsert_listing(
+    product_id: str,
+    shop_id: str,
+    url: str,
+    retail_price: int | None = None,
+    price: int | None = None,
+    stock_status: str | None = None,
+) -> str:
+    """(product_id, shop_id, url) をキーにupsertし、listings.id を返す。
+
+    渡したフィールドだけを更新する(PostgRESTのupsertはbody中のキーのみを
+    ON CONFLICT DO UPDATE SETの対象にするため、Noneのまま省略したフィールド
+    は既存値を上書きしない)。
+    """
+    client = get_client()
+    now = datetime.now(timezone.utc).isoformat()
+    payload: dict[str, Any] = {
+        "product_id": product_id,
+        "shop_id": shop_id,
+        "url": url,
+        "last_checked_at": now,
+    }
+    if retail_price is not None:
+        payload["retail_price"] = retail_price
+    if price is not None:
+        payload["price"] = price
+    if stock_status is not None:
+        payload["stock_status"] = stock_status
+    try:
+        res = (
+            client.table("listings")
+            .upsert(payload, on_conflict="product_id,shop_id,url")
+            .execute()
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise DatabaseError(f"listings upsert failed for url={url}: {exc}") from exc
+
+    if not res.data:
+        raise DatabaseError(f"listings upsert returned no data for url={url}")
+    return res.data[0]["id"]
+
+
 def insert_lottery(
     product_id: str,
     shop_id: str,

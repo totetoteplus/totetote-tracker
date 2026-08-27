@@ -17,6 +17,10 @@ application_start/application_endと混同しないようにする修正)を既�
 入っているケースがあった(例: 応募は既に締切済みなのにstatus=openのまま
 表示される不具合)。
 
+あわせて、抽出結果のprice(本文に明記された抽選/販売価格。捏造なし)を
+listings.retail_priceへも反映する(元々listings作成の仕組みが無く、
+既存lotteries分は未反映のまま溜まっていたため)。
+
 使い方:
     python scripts/backfill_lottery_sources.py
 """
@@ -75,6 +79,11 @@ def main() -> None:
     lotteries = db.list_lotteries_full()
     print(f"対象: {len(lotteries)}件\n")
 
+    existing_listings = {
+        (row["product_id"], row["shop_id"], row["url"]): row["retail_price"]
+        for row in db.list_listings_basic()
+    }
+
     id_to_lottery: dict[str, list[dict]] = {}
     for row in lotteries:
         tweet_id = _tweet_id_from_url(row["source_url"])
@@ -98,6 +107,7 @@ def main() -> None:
     dates_updated = 0
     status_updated = 0
     image_updated = 0
+    price_updated = 0
     not_found = 0
     product_image_cache: dict[str, str | None] = {}
 
@@ -122,8 +132,10 @@ def main() -> None:
                 url_updated += 1
                 print(f"  [url] {row['title'][:30]} -> {official_link}")
 
+            effective_shop_id = row["shop_id"]
             if extracted_shop_name:
                 shop_id = dedupe.match_shop_by_name(extracted_shop_name)
+                effective_shop_id = shop_id
                 if shop_id != row["shop_id"]:
                     db.update_lottery_shop(row["id"], shop_id)
                     shop_updated += 1
@@ -156,10 +168,26 @@ def main() -> None:
                     image_updated += 1
                     print(f"  [image] {row['title'][:30]} -> {product_image_url}")
 
+            extracted_price = extracted.get("price")
+            listing_url = official_link or row["url"] or row["source_url"]
+            if extracted_price and listing_url:
+                listing_key = (row["product_id"], effective_shop_id, listing_url)
+                if existing_listings.get(listing_key) != extracted_price:
+                    db.upsert_listing(
+                        product_id=row["product_id"],
+                        shop_id=effective_shop_id,
+                        url=listing_url,
+                        retail_price=extracted_price,
+                    )
+                    existing_listings[listing_key] = extracted_price
+                    price_updated += 1
+                    print(f"  [price] {row['title'][:30]} -> {extracted_price}円")
+
     print(
         f"\n完了: url_updated={url_updated} shop_updated={shop_updated} "
         f"dates_updated={dates_updated} status_updated={status_updated} "
-        f"image_updated={image_updated} tweet_not_found={not_found}"
+        f"image_updated={image_updated} price_updated={price_updated} "
+        f"tweet_not_found={not_found}"
     )
 
 

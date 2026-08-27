@@ -108,7 +108,14 @@ _EXTRACTION_SCHEMA_BASE = {
             "type": ["string", "null"],
             "description": "当選発表・抽選結果発表の日時",
         },
-        "release_date": {"type": ["string", "null"]},
+        "release_date": {
+            "type": ["string", "null"],
+            "description": (
+                "商品の発売日。ISO8601形式で、年月日まで判明している場合のみ返す"
+                "(例: 2026-12-01)。年月のみなど日が不明な場合はnullにする"
+                "(不完全な日付を返さない)"
+            ),
+        },
         "conditions": {
             "type": ["string", "null"],
             "description": "応募条件・購入条件を本文の表現のまま短くまとめたもの",
@@ -187,6 +194,25 @@ def _ai_enabled() -> bool:
 MAX_IMAGES_PER_REQUEST = 2
 
 DATE_LIKE_FIELDS = ("application_start", "application_end", "result_date")
+ALL_DATE_FIELDS = DATE_LIKE_FIELDS + ("release_date",)
+
+
+def _sanitize_date_fields(result: dict[str, Any]) -> dict[str, Any]:
+    """日付系フィールドがISO8601として不正な場合はnullに落とす。
+
+    「2026-12」のような年月のみの値等、DBのtimestamptz列に入らない不完全な
+    値をモデルが返すことがあるため、書き込み前に必ず検証する(未検証のまま
+    渡すとDB書き込みが例外で落ち、そのバッチの残り全件が処理されなくなる)。
+    """
+    for field in ALL_DATE_FIELDS:
+        value = result.get(field)
+        if not value:
+            continue
+        try:
+            datetime.fromisoformat(value)
+        except ValueError:
+            result[field] = None
+    return result
 
 
 def _call_extraction(
@@ -242,7 +268,7 @@ def _call_extraction(
         else None
     )
 
-    return result
+    return _sanitize_date_fields(result)
 
 
 _IMAGE_ONLY_SCHEMA = {

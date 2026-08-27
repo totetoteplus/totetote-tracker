@@ -140,6 +140,17 @@ def promote_batch(limit: int = 5) -> None:
                 ),
                 source_url=source_url,
             )
+
+            # 抽選/販売価格: 本文に明記されていた場合のみ(捏造しない)、
+            # 商品x店舗の実勢価格としてlistings.retail_priceへ反映する。
+            if extracted.get("price"):
+                db.upsert_listing(
+                    product_id=match.product_id,
+                    shop_id=shop_id,
+                    url=official_page_url,
+                    retail_price=extracted["price"],
+                )
+
             db.update_candidate_status(
                 candidate_id, "approved", candidate_product_id=match.product_id
             )

@@ -68,6 +68,14 @@ def match_product(
     return MatchResult(decision=MatchDecision.NEW_PRODUCT, product_id=product_id)
 
 
+#  投稿文中で使われがちな略称・通称を正式名称へ寄せるための対応表。
+#  無いと同一店舗が略称違いでshopsに複数行できてしまう(例: 「ポケセンオンライン」
+#  と「ポケモンセンターオンライン」)。キー・値はnormalize_name後の形で比較する。
+SHOP_NAME_ALIASES: dict[str, str] = {
+    normalize_name("ポケセンオンライン"): "ポケモンセンターオンライン",
+}
+
+
 def match_shop_by_name(shop_name: str) -> str:
     """本文中に明記された実施店舗名からshops.idを解決する(名称の完全一致のみ、v1)。
 
@@ -78,5 +86,6 @@ def match_shop_by_name(shop_name: str) -> str:
     常にNone(捏造しないため推測はしない)。
     """
     normalized = normalize_name(shop_name)
-    domain = f"text:{normalized}"
-    return db.upsert_shop(name=shop_name, domain=domain, official_url=None)
+    canonical_name = SHOP_NAME_ALIASES.get(normalized, shop_name)
+    domain = f"text:{normalize_name(canonical_name)}"
+    return db.upsert_shop(name=canonical_name, domain=domain, official_url=None)
