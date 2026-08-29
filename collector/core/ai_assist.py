@@ -87,11 +87,14 @@ _EXTRACTION_SCHEMA_BASE = {
         "price": {
             "type": ["integer", "null"],
             "description": (
-                "商品そのものの販売価格(税込)。応募条件として提示される"
-                "「¥300以上の購入が確認できるレシートが必要」等のレシート/"
-                "購入証明の金額しきい値、送料、予約金、手数料は商品価格では"
-                "ないため絶対に price に入れない(該当する数字が本文/画像に"
-                "あっても商品自体の価格が別途明記されていなければnull)"
+                "商品そのものの販売価格(税込)。「¥◯◯」という金額がテキストや"
+                "画像にあっても、直前・直後に「レシート」「購入証明」「以上の"
+                "購入」「応募資格」「対象」等の語が伴う場合、それは応募資格の"
+                "金額しきい値であり商品価格ではない。例:"
+                "「¥300以上の購入が確認できるレシートが必要です」→price は"
+                "商品価格ではなく必ずnull(この300という数字をpriceに入れる"
+                "ことは絶対に禁止)。送料・予約金・手数料も同様にnull。"
+                "商品自体の値札・価格として明記された金額のみpriceに入れる"
             ),
         },
         "application_start": {
@@ -100,7 +103,11 @@ _EXTRACTION_SCHEMA_BASE = {
                 "応募(抽選申込)の受付が始まる日時。ISO8601形式 "
                 "(例: 2026-08-17T11:00:00+09:00)。時刻不明なら日付のみ。"
                 "「当選発表」「注文期限」「購入期限」等、応募受付とは別のイベントの"
-                "日時をここに入れない"
+                "日時をここに入れない。「◯月◯日 ◯時◯分まで」のように締切"
+                "(終える方の日時)しか書かれておらず、開始日時が本文中に別途"
+                "明記されていない場合、その日時は application_end であって"
+                "application_start ではない(絶対に取り違えない)。開始日時が"
+                "不明ならapplication_startはnullのままにする"
             ),
         },
         "application_end": {
@@ -110,7 +117,10 @@ _EXTRACTION_SCHEMA_BASE = {
                 "「当選者向けの注文期限・購入期限」とは別物であり、混同しないこと。"
                 "本文に応募受付終了の日時が書かれていなければnull"
                 "(注文期限しか書かれていない投稿は多くの場合、応募自体は既に締め切られた"
-                "後の当選者向け案内である)"
+                "後の当選者向け案内である)。"
+                "「◯月◯日 ◯時◯分まで」「受付期間: 〜◯月◯日」のように締切のみが"
+                "明記されている投稿では、その日時は必ずここ(application_end)に"
+                "入れる(application_startに誤って入れない)"
             ),
         },
         "result_date": {
@@ -185,6 +195,10 @@ SYSTEM_PROMPT = """あなたは日本語の抽選販売・先着販売・受注�
   「当選発表」「注文期限」しか書かれておらず応募受付期間の記載が無い投稿
   (=既に応募が締め切られた後の当選者向け案内である可能性が高い)では、
   application_start/application_endは両方nullのままにする
+  「受付期間 8月26日 23:59まで」のように締切日時しか書かれておらず開始日時が
+  別途明記されていない投稿では、その日時はapplication_end(受付終了)であり、
+  application_start(受付開始)ではない。取り違えるとステータス判定
+  (open/closed)が逆転するため特に注意する
 - product_image_index(渡された場合)は、画面のほぼ全体が商品(パッケージ/BOX/
   フィギュア等)の写真だけで構成されているクリーンな画像がある場合のみ、
   そのインデックスを返す。色付きの見出しバナーや応募期間・価格等の説明文/
@@ -250,6 +264,9 @@ def _call_extraction(
     response = client.messages.create(
         model=EXTRACTION_MODEL,
         max_tokens=1024,
+        # 構造化抽出タスクのため出力のブレを抑える(temperature未指定だと
+        # 同じ入力でも呼び出しごとに結果が変わることがあった)。
+        temperature=0,
         # システムプロンプトは全呼び出しで共通のため、プロンプトキャッシュで
         # 入力トークン代を抑える(2回目以降のヒットで当該分がほぼ無料になる)。
         system=[
@@ -325,6 +342,7 @@ def extract_product_image(text: str, image_urls: list[str]) -> str | None:
     response = client.messages.create(
         model=EXTRACTION_MODEL,
         max_tokens=64,
+        temperature=0,
         system=[
             {
                 "type": "text",
@@ -390,6 +408,7 @@ def match_product_name(new_name: str, candidates: list[str]) -> int | None:
     response = client.messages.create(
         model=EXTRACTION_MODEL,
         max_tokens=32,
+        temperature=0,
         system=[
             {
                 "type": "text",
