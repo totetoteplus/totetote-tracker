@@ -238,11 +238,11 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年8月30日 06:20（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年8月31日 06:21（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
-    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月28日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月31日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
   </div>
 
   <div class="toolbar">
@@ -904,13 +904,13 @@ const ITEMS = [
     category:"watch", categoryLabel:"腕時計", icon:"⚫",
     name:"ケンテックス × 葬送のフリーレン オリジナルウォッチ（ゾルトラーク／花畑を出す魔法 全2種）",
     store:"ケンテックス公式ショップ",
-    period:"予約受付開始 6月19日(金)〜（終了日不明）",
+    period:"予約受付 6月19日(金)〜（1次・2次生産分とも完売）",
     periodStart:"2026-06-19",
-    status:"open", statusText:"受付中（2次生産分予約受付中）",
+    status:"closed", statusText:"受付終了（完売）",
     lotteryPrice:38500,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"情報不足",
-    note:"公式ショップで正式に先着順の予約制と確認。1次生産分は完売済み、現在2次生産分を予約受付中（発送予定2026年9月末、シリアルナンバー001/500〜500/500）。2次受付の終了日は明記なし",
+    note:"公式ショップの先着順予約制。1次生産分（500本）・2次生産分（500本）とも完売を確認。正確な完売日時は情報源になし",
     lotteryUrl:"https://kentex-shop.com/SHOP/E664M-01_2nd.html",
     sourceUrl:null,
     applyPeriod:null,
@@ -1352,9 +1352,9 @@ const ITEMS = [
     closedOn:"2026-08-11",
     status:"closed", statusText:"受付終了",
     lotteryPrice:5400,
-    resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足",
-    note:"応募ページ上は応募自体が無料表示のみで、実売価格は過去実施回の参考値。応募期間（8/11単日枠）は経過済み。終了の公式アナウンスは未確認のため期間経過による推定",
+    resaleLow:8500, resaleHigh:12000,
+    dataStatus:"reference", confidence:"低〜中（買取価格を参考値として使用。実際のフリマ転売価格とは異なる可能性あり）",
+    note:"対象はメガブレイブまたはメガシンフォニアのいずれかのBOX。メガシンフォニアBOXはカードラッシュ買取8,500円(8/26時点)、メガブレイブBOXはメルカリ相場約12,000円・カードラッシュ買取9,500円(8/26時点)との報告あり。応募期間（8/11単日枠）は経過済み。終了の公式アナウンスは未確認のため期間経過による推定",
     lotteryUrl:"https://livepocket.jp/e/v6mpg",
     sourceUrl:null,
     applyPeriod:"8月11日(火)11:00〜20:00",
@@ -1917,12 +1917,12 @@ const ITEMS = [
     store:"イオン九州（iAEONアプリ）",
     period:"応募期間 8月22日(土)0:00〜8月30日(日)23:59【イオン九州限定】",
     periodStart:"2026-08-22",
-    deadline:"2026-08-30",
-    status:"open", statusText:"受付中（〆切8/30）",
+    closedOn:"2026-08-30",
+    status:"closed", statusText:"受付終了（当選発表9/15予定）",
     lotteryPrice:null,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（イオン九州公式告知ページとX投稿で一致）",
-    note:"拡張パック「30th CELEBRATION」またはプレミアムデッキセット エーフィ・ブラッキーから1点選択して応募。ポケモンカードの基本ルールに関する簡単なクイズに正解する必要あり。iAEONアプリの「お得情報」欄から応募。当選発表9月15日予定。未発売のため転売相場データなし",
+    note:"拡張パック「30th CELEBRATION」またはプレミアムデッキセット エーフィ・ブラッキーから1点選択して応募。ポケモンカードの基本ルールに関する簡単なクイズに正解する必要あり。iAEONアプリの「お得情報」欄から応募。応募期間8月22日0:00〜8月30日23:59で終了。当選発表9月15日12:00以降順次、購入期間9月16日〜9月20日。未発売のため転売相場データなし",
     lotteryUrl:"https://www.aeon-kyushu.info/customer/information/archives/125",
     sourceUrl:"https://www.aeon-kyushu.info/customer/information/archives/125",
     applyPeriod:"8月22日(土)0:00〜8月30日(日)23:59",
@@ -1955,12 +1955,12 @@ const ITEMS = [
     store:"エディオン／トレカキャピタル",
     period:"応募期間 8月28日(金)10:00〜8月30日(日)23:59",
     periodStart:"2026-08-28",
-    deadline:"2026-08-30",
-    status:"open", statusText:"受付中（〆切8/30）",
+    closedOn:"2026-08-30",
+    status:"closed", statusText:"受付終了（当選発表9/15予定）",
     lotteryPrice:7200,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（X投稿・まとめサイトで一致するが公式ページ本文は未確認）",
-    note:"拡張パックBOX（7,200円）とプレミアムデッキセット エーフィ・ブラッキーが対象。エディオンとトレカキャピタルそれぞれ別URLで応募受付。当選発表9月15日中、購入期間9月16日(水)〜9月20日(日)。未発売のため転売相場データなし",
+    note:"拡張パックBOX（7,200円）とプレミアムデッキセット エーフィ・ブラッキーが対象。エディオンとトレカキャピタルそれぞれ別URLで応募受付。受付期間8月28日10:00〜8月30日23:59で終了。当選発表9月15日中、購入期間9月16日(水)〜9月20日(日)。未発売のため転売相場データなし",
     lotteryUrl:"https://edion-cp.com/pokeca0916",
     sourceUrl:"https://x.com/PokeGetInfoMain/status/2092363892626518394",
     applyPeriod:"8月28日(金)10:00〜8月30日(日)23:59",
@@ -1974,17 +1974,53 @@ const ITEMS = [
     store:"楽天ブックス",
     period:"応募期間 8月27日(木)10:00〜8月30日(日)23:59",
     periodStart:"2026-08-27",
-    deadline:"2026-08-30",
-    status:"open", statusText:"受付中（〆切8/30）",
+    closedOn:"2026-08-30",
+    status:"closed", statusText:"受付終了",
     lotteryPrice:null,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（ファミ通・電撃オンラインが応募期間で一致するが記事本文は未確認）",
-    note:"拡張パック「30th CELEBRATION」およびプレミアムデッキセット エーフィ・ブラッキー等が対象。1人1点まで当選。楽天会員の住所登録必須（未登録は抽選無効）。当選者向け販売期間9月14日(月)10:00〜9月18日(金)9:59、支払いはクレジットカードのみ。個別の当選発表日は明記されず、販売開始前にメール通知の見込み。未発売のため転売相場データなし",
+    note:"拡張パック「30th CELEBRATION」およびプレミアムデッキセット エーフィ・ブラッキー等が対象。1人1点まで当選。楽天会員の住所登録必須（未登録は抽選無効）。抽選エントリー期間8月27日10:00〜8月30日23:59で終了。当選者向け販売期間9月14日(月)10:00〜9月18日(金)9:59、支払いはクレジットカードのみ。未発売のため転売相場データなし",
     lotteryUrl:null,
     sourceUrl:"https://www.famitsu.com/article/202608/85621",
     applyPeriod:"8月27日(木)10:00〜8月30日(日)23:59",
     announceDate:null,
     saleType:"lottery"
+  },
+  {
+    id:"ichibankuji-yuyuhakusho-makainotobira",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ 幽☆遊☆白書 魔界の扉編",
+    store:"一番くじ公式ショップ／一番くじONLINE ほか（詳細な取扱店舗は要確認）",
+    period:"2026年9月下旬発売予定（正確な発売日は未公表）",
+    periodStart:null,
+    status:"soon", statusText:"受付前（9月下旬発売予定）",
+    lotteryPrice:850,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（発売決定・価格は複数一次報道で確認済みだが、具体的な発売日は「9月下旬」としか公表されていない）",
+    note:"浦飯幽助-魔族大隔世-、桑原和真、妖狐蔵馬、仙水忍などのフィギュアがラインナップ。正確な発売日が判明次第、要更新",
+    lotteryUrl:"https://1kuji.com/products/yuhaku4",
+    sourceUrl:"https://hobby.dengeki.com/news/2991914/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"ichibankuji-kimigashinumadekoi",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ きみが死ぬまで恋をしたい",
+    store:"一番くじ公式ショップ／一番くじONLINE ほか（詳細な取扱店舗は要確認）",
+    period:"2026年9月24日より順次発売予定",
+    periodStart:"2026-09-24",
+    status:"soon", statusText:"受付前（9/24発売予定）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（発売日は一次報道で確認済みだが、価格・転売相場は未確認）",
+    note:"価格・転売相場情報は情報不足。判明次第要更新",
+    lotteryUrl:null,
+    sourceUrl:"https://hobby.dengeki.com/news/3133431/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
   }
 ];
 
