@@ -238,7 +238,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年9月4日 06:21（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年9月5日 06:17（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -811,8 +811,8 @@ const ITEMS = [
     store:"DRAGON BALL STORE TOKYO",
     period:"抽選期間 8月29日(土)12:00〜9月4日(金)23:59",
     periodStart:"2026-08-29",
-    deadline:"2026-09-04",
-    status:"open", statusText:"受付中（〆切9/4）",
+    closedOn:"2026-09-04",
+    status:"closed", statusText:"受付終了（当選発表9/5 12:00以降）",
     lotteryPrice:5760,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（DRAGON BALL STORE TOKYO公式X投稿で確認。LivePocketの応募ページ自体は本セッションのネットワーク制限により直接確認できず）",
@@ -821,6 +821,25 @@ const ITEMS = [
     sourceUrl:null,
     applyPeriod:"8月29日(土)12:00〜9月4日(金)23:59",
     announceDate:"9月5日(土)12:00以降",
+    saleType:"lottery"
+  },
+  {
+    id:"db-brightnessofhope-bandai",
+    category:"dragonball", categoryLabel:"ドラゴンボールカード", icon:"🟠",
+    name:"ドラゴンボールスーパーカードゲーム フュージョンワールド ブースターパック「BRIGHTNESS OF HOPE」【FB11】（バンダイナムコCross Store事前抽選）",
+    store:"バンダイナムコCross Store／フュージョンワールドオフィシャルストア全店",
+    period:"事前抽選期間 9月2日(水)10:00〜9月6日(日)23:59",
+    periodStart:"2026-09-02",
+    deadline:"2026-09-06",
+    status:"open", statusText:"受付中（〆切9/6）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（公式ストアX投稿で応募期間・販売期間は確認済みだが、この抽選枠固有の価格表記は未確認。db-storybooster01-bandaiと同一パターンの店舗抽選）",
+    note:"販売期間9月12日(土)〜13日(日)。1BOX24パック。未発売のため転売相場データなし",
+    lotteryUrl:"https://bandainamco-am.co.jp/official_shop/dbs-cardgame/",
+    sourceUrl:"https://x.com/dbfw_cgSTORE/status/2094953459485405381",
+    applyPeriod:"9月2日(水)10:00〜9月6日(日)23:59",
+    announceDate:null,
     saleType:"lottery"
   },
   {
@@ -1637,8 +1656,8 @@ const ITEMS = [
     store:"ゲオ（GEO Online）",
     period:"応募期間 8月31日(月)11:00〜9月3日(木)17:59",
     periodStart:"2026-08-31",
-    deadline:"2026-09-03",
-    status:"open", statusText:"受付中（〆切9/3）",
+    closedOn:"2026-09-03",
+    status:"closed", statusText:"受付終了（当選発表9/24予定）",
     lotteryPrice:5940,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"高（募集期間・価格は確認済み。転売相場は未発売のため不明）",
@@ -1733,10 +1752,10 @@ const ITEMS = [
     store:"ローソン／ミニストップ／書店／ホビーショップ／一番くじ公式ショップ／一番くじONLINE",
     period:"店頭 9月5日(土)〜順次／オンライン 9月7日(月)17:00〜",
     periodStart:"2026-09-05",
-    status:"soon", statusText:"受付前（9/5発売予定）",
+    status:"open", statusText:"発売中（店頭9/5〜、オンライン9/7 17:00〜）",
     lotteryPrice:850,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
+    dataStatus:"insufficient", confidence:"情報不足（発売直後のため転売相場データなし）",
     note:"百鬼あやめ・大空スバル・不知火フレア・白銀ノエルがRPG風衣装のフィギュアで登場（約17〜19cm）。発売日から12月末日までダブルチャンスキャンペーン（ちょこのっこフィギュア4体セットが抽選50名に当たる）あり",
     lotteryUrl:"https://1kuji.com/products/hololive-rpg",
     sourceUrl:"https://hobby.watch.impress.co.jp/docs/news/2133280.html",
@@ -1807,12 +1826,12 @@ const ITEMS = [
     store:"mita sneakers（デジタル抽選／来店抽選）",
     period:"抽選 8月29日(土)10:00〜9月3日(木)19:00",
     periodStart:"2026-08-29",
-    deadline:"2026-09-03",
-    status:"open", statusText:"受付中（〆切9/3）",
+    closedOn:"2026-09-03",
+    status:"closed", statusText:"受付終了（当選連絡9/5 9:00頃、発売9/5）",
     lotteryPrice:32450,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"高（応募期間・価格）／転売相場は発売前のため不明",
-    note:"約20年ぶり復刻。シュータンラベルが面ファスナー式で交換可能な「Rare Air」エディション。当選連絡は9月5日(土)9:00頃",
+    dataStatus:"insufficient", confidence:"高（応募期間・価格）／転売相場は発売直後のため不明",
+    note:"約20年ぶり復刻。シュータンラベルが面ファスナー式で交換可能な「Rare Air」エディション。当選連絡9月5日(土)9:00頃、来店受取期間9月5日(土)10:00〜9月7日(月)19:30、発売日9月5日・価格32,450円（税込）",
     lotteryUrl:"https://draw.mita-sneakers.co.jp/jordan-brand-air-jordan-4-retrorare-air-tour-yellow-michael-jordan/",
     sourceUrl:"https://tenbaiquest.com/sneakers/tour_yellow-2",
     applyPeriod:"8月29日(土)10:00〜9月3日(木)19:00",
@@ -1882,10 +1901,10 @@ const ITEMS = [
     store:"セブン-イレブン／イトーヨーカドー／ゆめタウン ほか",
     period:"9月5日(土)より順次発売",
     periodStart:"2026-09-05",
-    status:"soon", statusText:"受付前（9/5発売予定）",
+    status:"open", statusText:"発売中（9/5より順次発売）",
     lotteryPrice:781,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足（発売前のため転売相場データなし）",
+    dataStatus:"insufficient", confidence:"情報不足（発売直後のため転売相場データなし）",
     note:null,
     lotteryUrl:"https://1kuji.com/products/disney_ps13",
     sourceUrl:"https://convenicheck.com/newitem/newit_seven/133090/",
@@ -2446,6 +2465,24 @@ const ITEMS = [
     applyPeriod:"〜9月11日(金)11:59",
     announceDate:"9月16日〜9月19日の間予定",
     saleType:"lottery"
+  },
+  {
+    id:"ichibankuji-madeinabyss",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ メイドインアビス",
+    store:"未確認（一番くじONLINE ほか想定）",
+    period:"10月31日(土)発売予定",
+    periodStart:"2026-10-31",
+    status:"soon", statusText:"受付前（10/31発売予定）",
+    lotteryPrice:850,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"低（WebSearchの二次情報のみで確認、1kuji.com本体は本セッションのネットワーク制限により直接確認できず。取扱店舗は未確認）",
+    note:"発売前のため転売相場データなし。詳細は次回リサーチで公式ページの直接確認が必要",
+    lotteryUrl:"https://1kuji.com/products/miabyss",
+    sourceUrl:null,
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
   }
 ];
 
