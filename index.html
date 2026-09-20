@@ -238,11 +238,11 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年9月20日 06:25（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年9月21日 06:15（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
-    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年8月31日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
+    <b>この一覧の見方：</b> 抽選期間の開始が早い順にすべての商品を並べています。左端のスタブは<b>2026年9月21日時点で確認できた受付状況</b>（青＝受付中／オレンジ＝受付前／グレー＝受付終了／濃紺＝要確認・不定期）です。緑色の「抽選ページを開く」リンクから応募・詳細確認ができます。期間・当選発表など未確認の情報は「不明」「情報不足」と表示されますので、実際にご利用の際は必ず抽選ページで最新情報をご確認ください。当サイトはアフィリエイト広告を利用しています。
   </div>
 
   <div class="toolbar">
@@ -2714,11 +2714,11 @@ const ITEMS = [
     deadline:"2026-09-24",
     status:"open", statusText:"受付中（〆切9/24 23:59、当選発表10/2予定）",
     lotteryPrice:8800,
-    resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"中（コナミスタイル公式Xおよびインサイド・トレカプロ記事で確認、konamistyle.jp内の具体的な商品ページURLは未特定）",
-    note:"元々WCS2026（世界選手権）観戦者向け限定配布品だったデュエルセット・ポスター6種の追加抽選販売。既にコナミスタイルで購入済みの人は対象外、お一人様各1点まで。当選発表10月2日予定。未発売のため転売相場データなし",
+    resaleLow:66666, resaleHigh:89999,
+    dataStatus:"confirmed", confidence:"中（コナミスタイル公式Xおよびインサイド・トレカプロ記事で確認、konamistyle.jp内の具体的な商品ページURLは未特定。転売相場はメルカリ成約価格帯、トレカプロ記事より）",
+    note:"元々WCS2026（世界選手権）観戦者向け限定配布品だったデュエルセット・ポスター6種の追加抽選販売。既にコナミスタイルで購入済みの人は対象外、お一人様各1点まで。当選発表10月2日予定。新規描き下ろし「ブラック・マジシャン」「ブラック・マジシャン・ガール」収録が理由でメルカリ転売相場は定価の約8.8倍（成約価格帯66,666〜89,999円、中央値約77,000円）",
     lotteryUrl:"https://x.com/konamistyle/status/2098230048553656348",
-    sourceUrl:"https://www.inside-games.jp/article/2026/09/15/187772.html",
+    sourceUrl:"https://tcgpro.co.jp/media/yugioh-wcs2026-chusen/",
     applyPeriod:"9月18日(金)11:00〜9月24日(木)23:59",
     announceDate:"10月2日予定",
     saleType:"lottery"
@@ -2831,6 +2831,79 @@ const ITEMS = [
     note:"1回790円(税込)。A賞奈良シカマル、B賞猿飛アスマ、C賞飛段、D賞角都（各MASTERLISE）、ラストワン賞はうずまきナルト（風遁・螺旋手裏剣）MASTERLISE。発売前のため転売相場データなし",
     lotteryUrl:"https://1kuji.com/products/naruto11",
     sourceUrl:"https://hobby.dengeki.com/news/3059961/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"watch-bocchitherock-seiko",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"ぼっち・ざ・ろっく！×セイコー コラボレーションウォッチ（レコード盤モチーフ）",
+    store:"セイコーオンラインストア／ユートレジャー",
+    period:"予約受付 10月17日(土)12:00〜予定",
+    periodStart:"2026-10-17",
+    deadline:null,
+    status:"soon", statusText:"受付前（10/17 12:00〜予約開始予定）",
+    lotteryPrice:59400,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"高（PR TIMES掲載のプレスリリース・キャラホビ記事で確認）",
+    note:"300本限定のクロノグラフモデル。レコード盤モチーフの文字盤、ケースバックにシリアルナンバー入り。未発売のため転売相場データなし",
+    lotteryUrl:"https://prtimes.jp/main/html/rd/p/000001001.000037605.html",
+    sourceUrl:"https://premium.gamepedia.jp/hobby/archives/248945",
+    applyPeriod:"10月17日(土)12:00〜予定",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"ichibankuji-tensura-chokotto",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじちょこっと 転生したらスライムだった件",
+    store:"一番くじONLINE／一番くじ公式ショップ ほか",
+    period:"10月2日(金)より順次発売予定",
+    periodStart:"2026-10-02",
+    status:"soon", statusText:"受付前（10/2より順次発売予定）",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（電撃ホビーウェブ・一番くじ公式Xで確認、価格は未確認のためnull）",
+    note:"原初の悪魔×リムル様をテーマに、スライムのぬいぐるみマスコットや新規描きおろしメタリックポスター等をラインナップ。価格・具体的な商品ページURLは未確認",
+    lotteryUrl:"https://hobby.dengeki.com/news/3148400",
+    sourceUrl:"https://hobby.dengeki.com/news/3148400",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"ichibankuji-ive-starship-amuse-vol2",
+    category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
+    name:"一番くじ IVE FROM STARSHIP ENTERTAINMENT WITH AMUSE Vol.2",
+    store:"ファミリーマート／書店・ホビーショップ等（店頭9/19〜）／一番くじONLINE（10/13 17:00〜）",
+    period:"9月19日(土)発売（店頭）／オンライン10月13日(火)17:00〜",
+    periodStart:"2026-09-19",
+    status:"open", statusText:"発売中（店頭9/19〜、オンライン10/13 17:00〜）",
+    lotteryPrice:590,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"高（電撃ホビーウェブ・IVE JAPAN OFFICIAL・バンダイ プレスリリースで確認）",
+    note:"韓国アイドルグループIVEの「一番くじ」第2弾。撮り下ろしビジュアルのアクリルスタンド・クリアファイル・ステッカー等、ラストワン賞はメンバー集合のビジュアルボード。発売直後のため転売相場データなし",
+    lotteryUrl:"https://1kuji.com/products/ive2",
+    sourceUrl:"https://hobby.dengeki.com/news/2964554/",
+    applyPeriod:null,
+    announceDate:null,
+    saleType:"firstcome"
+  },
+  {
+    id:"chiikawa-shisadarake-kuji",
+    category:"chiikawa", categoryLabel:"ちいかわ", icon:"🟤",
+    name:"ちいかわくじ「シーサーだらけくじ」（2026年10月開催予定・詳細未発表）",
+    store:"ちいかわマーケット オンラインくじ",
+    period:"2026年10月開催予定（販売日・価格未発表）",
+    periodStart:null,
+    status:"soon", statusText:"受付前",
+    lotteryPrice:null,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（ちいかわマーケット公式Xの予告ビジュアルで確認、詳細は10月改めて告知予定）",
+    note:"踊るシーサーを描いた予告ビジュアルのみ公開。販売日・価格・ラインナップは10月に改めて告知予定",
+    lotteryUrl:"https://x.com/chiikawa_market/status/2099830591978098842",
+    sourceUrl:"https://dengekionline.com/article/202609/88074",
     applyPeriod:null,
     announceDate:null,
     saleType:"firstcome"
