@@ -238,7 +238,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年9月27日 06:20（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年9月28日 06:20（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -530,11 +530,12 @@ const ITEMS = [
     period:"応募期間 9月21日(月)開店〜9月27日(日)閉店",
     periodStart:"2026-09-21",
     deadline:"2026-09-27",
-    status:"open", statusText:"受付中（〆切9/27、当選発表10/9予定）",
+    closedOn:"2026-09-27",
+    status:"closed", statusText:"受付終了（〆切9/27、当選発表10/9予定）",
     lotteryPrice:10800,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（価格10,800円は複数の独立ソース〈X公式投稿・note記事・ポケモンセンターオンラインサポートページの類似ラウンド案内〉で一致するが、30th.pokemon-card.com本文は本セッションのネットワーク制限により直接確認できず）",
-    note:"9種セット（18パック+プロモカード27種）。LINE「TSUTAYAトレーディングカード公式」友だち追加が応募条件。当選発表10月9日(金)予定、購入期限10月16日(金)〜10月18日(日)",
+    note:"9種セット（18パック+プロモカード27種）。LINE「TSUTAYAトレーディングカード公式」友だち追加が応募条件。9/27(日)閉店で応募受付終了（複数ソースで確認）。当選発表10月9日(金)予定、購入期限10月16日(金)〜10月18日(日)",
     lotteryUrl:"https://shibuyatsutaya.tsite.jp/article/2715.html",
     sourceUrl:"https://x.com/pokecamatomeru/status/2101867821445922988",
     applyPeriod:"9月21日(月)開店〜9月27日(日)閉店",
@@ -791,17 +792,37 @@ const ITEMS = [
     category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
     name:"ONE PIECEカードゲーム プレミアムカードコレクション -ONE PIECE DAY'26-（3次予約販売・2027年4月発送分）",
     store:"プレミアムバンダイ（予約販売）",
-    period:"3次予約受付中 9月24日(木)12:00〜（終了日時不明）／発送2027年4月予定",
+    period:"3次予約受付 9月24日(木)12:00〜9月28日(月)11:59頃（4次予約開始に伴い終了）／発送2027年4月予定",
     periodStart:"2026-09-24",
-    deadline:null,
-    status:"open", statusText:"受付中（9/24 12:00開始、終了日未定、発送2027年4月予定）",
+    deadline:"2026-09-28",
+    closedOn:"2026-09-27",
+    status:"closed", statusText:"受付終了（4次予約（発送2027年6月分）が9/28 12:00開始のため終了）",
     lotteryPrice:990,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（インサイド・電撃ホビーウェブ・公式X等複数ソースで開始日時・価格・発送月が一致。受付終了日時とp-bandai.jp商品ページ本文は未確認）",
-    note:"既存項目 onepiece-day26-premium（1次抽選、9/7受付終了）とは別枠。1次抽選終了後、2次予約（9/17開始、2027年2月発送分）に続く3次予約（9/24開始、2027年4月発送分）。売り切れ次第、発送月を変えた予約が続く方式との報道あり。内容は「モンキー・D・ルフィ」プロモカード＋DON!!カードの2枚セット。9月26日時点で「ONE PIECEカードゲーム」公式X等の報道により4次予約（発送2027年6月分）が9月28日(月)12:00開始予定と判明しており、3次予約は近日終了の可能性が高い",
+    note:"既存項目 onepiece-day26-premium（1次抽選、9/7受付終了）とは別枠。1次抽選終了後、2次予約（9/17開始、2027年2月発送分）に続く3次予約（9/24開始、2027年4月発送分）。売り切れ次第、発送月を変えた予約が続く方式との報道あり。内容は「モンキー・D・ルフィ」プロモカード＋DON!!カードの2枚セット。4次予約（発送2027年6月分、id:onepiece-day26-premium-4th-reservation）が9月28日(月)12:00開始したため3次予約は終了と推定（正確な終了時刻は未確認）",
     lotteryUrl:"https://www.inside-games.jp/article/2026/09/23/188144.html",
     sourceUrl:"https://hobby.dengeki.com/news/3164863/",
-    applyPeriod:"9月24日(木)12:00〜（終了日不明）",
+    applyPeriod:"9月24日(木)12:00〜9月28日(月)頃",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"onepiece-day26-premium-4th-reservation",
+    category:"onepiece", categoryLabel:"ワンピースカード", icon:"🟡",
+    name:"ONE PIECEカードゲーム プレミアムカードコレクション -ONE PIECE DAY'26-（4次予約販売・2027年6月発送分）",
+    store:"プレミアムバンダイ（予約販売）",
+    period:"4次予約受付中 9月28日(月)12:00〜（終了日時不明）／発送2027年6月予定",
+    periodStart:"2026-09-28",
+    deadline:null,
+    status:"open", statusText:"受付中（9/28 12:00開始、終了日未定、発送2027年6月予定）",
+    lotteryPrice:990,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（インサイド〈9/27付記事〉・Yahoo!ニュース複数配信で開始日時・価格・発送月が一致するが、p-bandai.jp商品ページ本文は未確認）",
+    note:"既存項目 onepiece-day26-premium-3rd-reservation（3次予約、9/24開始、2027年4月発送分）に続く4次予約。内容は「モンキー・D・ルフィ」プロモカード＋DON!!カードの2枚セット（8/22〜23開催「ONE PIECE DAY'26」記念商品）。売り切れ次第、発送月を変えた予約が続く方式。応募終了日時・転売相場は未発売のため未確認",
+    lotteryUrl:"https://www.inside-games.jp/article/2026/09/27/188332.html",
+    sourceUrl:"https://news.yahoo.co.jp/articles/b446cfcb45a0f8cb43ac30514353c45edfbb6385",
+    applyPeriod:"9月28日(月)12:00〜（終了日不明）",
     announceDate:null,
     saleType:"backorder"
   },
@@ -2053,6 +2074,25 @@ const ITEMS = [
     sourceUrl:"https://tenbaiquest.com/sneakers/tour_yellow-2",
     applyPeriod:"8月29日(土)10:00〜9月3日(木)19:00",
     announceDate:"9月5日(土)9:00頃",
+    saleType:"lottery"
+  },
+  {
+    id:"nike-onepiece-airmaxplus-devilfruits",
+    category:"nike", categoryLabel:"Nike", icon:"⚪",
+    name:"ONE PIECE × Nike Air Max Plus SP \"悪魔の実\"（Devil Fruits）コレクション 全3色",
+    store:"Nike SNKRS JP（SNKRS Reserve）／Nike Umeda ほか",
+    period:"国内発売 9月4日(木)〜〈メラメラの実〉9月12日(土)〜〈ゴムゴムの実〉9月25日(金)SNKRS Reserveにて発売",
+    periodStart:"2026-09-04",
+    closedOn:"2026-09-25",
+    status:"closed", statusText:"受付終了（9/25 SNKRS Reserve発売分は終了。原宿ポップアップ抽選は8/26受付終了）",
+    lotteryPrice:27500,
+    resaleLow:37282, resaleHigh:78497,
+    dataStatus:"confirmed", confidence:"中〜高（スニーカーダンクの相場情報に基づく。ゴムゴムの実カラーが¥78,497〜、オペオペの実カラーが¥37,282〜。メラメラの実カラーの相場は未確認）",
+    note:"ゴムゴムの実（パープル系／IR0968-500）・メラメラの実（オレンジ系）・オペオペの実（ベリー系）の3色展開、各¥27,500（税込）。原宿ポップアップでの事前抽選（応募期間8月23日(日)19:30〜8月26日(水)23:59）を経て、9月25日にSNKRS JPで一般発売（SNKRS Reserve方式）。アパレルも同時展開（Tシャツ¥6,930〜、ジャージ¥14,300、ベスト¥45,100）",
+    lotteryUrl:"https://www.nike.com/jp/launch/t/nike-one-piece-launch-detail",
+    sourceUrl:"https://snkrdunk.com/articles/33379/",
+    applyPeriod:"原宿ポップアップ抽選：8月23日(日)19:30〜8月26日(水)23:59",
+    announceDate:null,
     saleType:"lottery"
   },
   {
