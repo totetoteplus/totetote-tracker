@@ -287,7 +287,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年10月7日 06:15（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年10月8日 06:19（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -608,15 +608,16 @@ const ITEMS = [
     category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
     name:"LIMITED PACK WORLD CHAMPIONSHIP 2026",
     store:"オフィシャルトーナメントストア／フルイチ 各店",
-    period:"8月29日(土)発売。10月上旬時点で店舗の「受付終了」告知は確認できず、店舗ごとの締切・受付状況は要確認",
+    period:"8月29日(土)発売。関連する決勝観覧抽選（応募6/8〜6/21）・記念グッズ追加抽選（コナミスタイル、応募9/18〜9/24）いずれも受付終了済み",
     periodStart:null,
-    status:"unknown", statusText:"要確認（8/29発売、発売から1ヶ月超・受付終了の公式告知は未確認）",
+    status:"closed", statusText:"受付終了（関連抽選はすべて締切済み、商品自体は発売済み）",
+    closedOn:"2026-10-08",
     lotteryPrice:3960,
     resaleLow:5000, resaleHigh:5000,
-    dataStatus:"reference", confidence:"低（前年WCS2025実績を参考値として記載）",
-    note:"未発売のため確定データではない。オフィシャルトーナメントストア系通販（マルイ書店・ホビータイムワールド等）で予約受付が既に開始していることを確認。フルイチ各店でも抽選/受付を実施との情報あり（詳細期間は不明）",
+    dataStatus:"reference", confidence:"低（前年WCS2025実績を参考値として記載。本商品自体は抽選販売ではなく公認トーナメントストア限定の通常販売）",
+    note:"本体は抽選販売ではなく公認トーナメントストア限定の店頭販売品（8/29発売、1パック396円・1BOX10パック）。関連する決勝観覧抽選2種は応募6/8〜6/21で終了・決勝は8/30開催済み。記念グッズ「デュエルセットWCS2026」のコナミスタイル追加抽選も9/18 11:00〜9/24 23:59で受付終了。現在受付中の抽選要素はないため受付終了に変更",
     lotteryUrl:"https://www.yugioh-card.com/japan/products/26lp/",
-    sourceUrl:"https://price-base.com/useful/worldcs2025-box-market",
+    sourceUrl:"https://price-base.com/useful/?p=302521",
     applyPeriod:null,
     announceDate:null,
     saleType:"lottery"
@@ -2728,13 +2729,13 @@ const ITEMS = [
     id:"ichibankuji-pooh-100th",
     category:"ichibankuji", categoryLabel:"一番くじ", icon:"🟢",
     name:"一番くじ〈くまのプーさん〉100th Anniversary",
-    store:"一番くじ公式ショップ／一番くじONLINE ほか",
+    store:"一番くじ公式ショップ／一番くじONLINE ほか（取扱店はセブン‐イレブン・イトーヨーカドー・ゆめタウン等との記載もあり、オンライン取扱の有無は要確認）",
     period:"2026年10月10日発売予定",
     periodStart:"2026-10-10",
     status:"soon", statusText:"受付前（10/10発売予定）",
     lotteryPrice:790,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"高（電撃ホビーウェブ掲載情報を基に確認）",
+    dataStatus:"insufficient", confidence:"中〜高（電撃ホビーウェブは790円と記載、別のtoy-people.com記事は850円と記載しており価格情報源間に食い違いあり。発売後に再確認要）",
     note:"未発売のため転売相場データなし",
     lotteryUrl:"https://hobby.dengeki.com/news/3109132",
     sourceUrl:"https://hobby.dengeki.com/news/3109132",
@@ -3092,14 +3093,33 @@ const ITEMS = [
     period:"予約受付 10月7日(水)12:00〜11月27日(金)23:59予定",
     periodStart:"2026-10-07",
     deadline:"2026-11-27",
-    status:"soon", statusText:"受付前（10/7 12:00〜予約受付予定、〆切11/27）",
+    status:"open", statusText:"受付中（〆切11/27 23:59）",
     lotteryPrice:59400,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"高（PR TIMES掲載のプレスリリース・キャラホビ記事で確認）",
+    dataStatus:"insufficient", confidence:"高（PR TIMES掲載のプレスリリース・キャラホビ記事で確認。10/7の予約開始を複数の独立記事で確認済み）",
     note:"300本限定のクロノグラフモデル。レコード盤モチーフの文字盤、ケースバックにシリアルナンバー入り。未発売のため転売相場データなし。予約期間は2026年10月7日(水)12:00〜11月27日(金)23:59（PR TIMES公式リリースより。以前の10/17表記は二次情報源由来の誤りだったため修正）",
     lotteryUrl:"https://prtimes.jp/main/html/rd/p/000001001.000037605.html",
     sourceUrl:"https://premium.gamepedia.jp/hobby/archives/248945",
     applyPeriod:"2026年10月7日(水)12:00〜2026年11月27日(金)23:59",
+    announceDate:null,
+    saleType:"backorder"
+  },
+  {
+    id:"watch-fulton-haruhi20th",
+    category:"watch", categoryLabel:"腕時計", icon:"⚫",
+    name:"フルトンジャパン×『涼宮ハルヒの憂鬱』20周年記念アニバーサリークロノグラフ腕時計（ハルヒモデル／長門有希モデル）",
+    store:"フルトンジャパン公式通販サイト",
+    period:"予約受付 10月8日(木)〜予定（締切・発送時期は不明）",
+    periodStart:"2026-10-08",
+    deadline:null,
+    status:"soon", statusText:"受付前（10/8〜予約受付予定、締切不明）",
+    lotteryPrice:29700,
+    resaleLow:null, resaleHigh:null,
+    dataStatus:"insufficient", confidence:"中（animeanime.jp掲載のPR TIMES配信記事で確認。本セッションのネットワーク制限により公式サイト〈fultonjapan.com〉本文は直接確認できず）",
+    note:"TVアニメ『涼宮ハルヒの憂鬱』放送20周年記念。ハルヒモデル／長門有希モデルの各2種、各2,006点限定のアニバーサリークロノグラフ。締切・発送時期は情報不足。未発売のため転売相場データなし",
+    lotteryUrl:"https://fultonjapan.com/pages/haruhitv20th-watchproject",
+    sourceUrl:"https://animeanime.jp/release/prtimes/20261001/316576.html",
+    applyPeriod:null,
     announceDate:null,
     saleType:"backorder"
   },
