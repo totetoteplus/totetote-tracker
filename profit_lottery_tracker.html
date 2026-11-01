@@ -287,7 +287,7 @@
 
   <div class="topband">
     <div class="brand">TOTETOTE<span class="plus">+</span><span class="tracker">TRACKER</span></div>
-    <div class="updated">最終更新：2026年11月1日 06:02（Web検索による手動収集・状況は変動します）</div>
+    <div class="updated">最終更新：2026年11月2日 06:06（Web検索による手動収集・状況は変動します）</div>
   </div>
 
   <div class="notice">
@@ -646,13 +646,14 @@ const ITEMS = [
     category:"yugioh", categoryLabel:"遊戯王カード", icon:"🟣",
     name:"IMMORTAL PHOENIX",
     store:"コナミスタイル／各カードショップ（通常予約）",
-    period:"2026年度基本パック第3弾。9月17日頃〜予約受付中、10月31日発売（上限数に達し次第終了の先着予約方式のため締切は不明）",
+    period:"2026年度基本パック第3弾。9月17日頃〜予約受付、10月31日発売済み",
     periodStart:"2026-09-17",
-    status:"open", statusText:"予約受付中（10/31発売、締切不明）",
+    closedOn:"2026-10-31",
+    status:"closed", statusText:"受付終了（10/31発売済み・通常店舗で販売中）",
     lotteryPrice:5940,
     resaleLow:null, resaleHigh:null,
-    dataStatus:"insufficient", confidence:"情報不足（未発売のため転売相場データなし）",
-    note:"抽選商品ではなく通常の新パック先行予約。1パック198円(5枚入り)×30パック=5,940円(税込、BOX)。発売10月31日のため未発売・転売相場データなし",
+    dataStatus:"insufficient", confidence:"情報不足（発売直後のため転売相場データなし）",
+    note:"抽選商品ではなく通常の新パック先行予約。1パック198円(5枚入り)×30パック=5,940円(税込、BOX)。10月31日発売済みのため先着予約は終了、現在は通常店舗で販売中",
     lotteryUrl:"https://www.yugioh-card.com/japan/products/imph/",
     sourceUrl:null,
     applyPeriod:"9月17日頃〜（締切不明、先着予約）",
@@ -2571,7 +2572,7 @@ const ITEMS = [
     store:"一番くじ公式ショップ／一番くじONLINE ほか（詳細な取扱店舗は要確認）",
     period:"2026年10月24日発売予定",
     periodStart:"2026-10-24",
-    status:"open", statusText:"発売中（本日10/24発売予定、オンライン開始日は未確認）",
+    status:"open", statusText:"発売中（10/24発売、オンライン開始日は未確認）",
     lotteryPrice:850,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（複数の独立ニュースサイトで10/24発売予定の一致を確認。本セッションのネットワーク制限により1kuji.com本文・実際の発売開始事実は直接確認できず）",
@@ -2589,7 +2590,7 @@ const ITEMS = [
     store:"一番くじ公式ショップ（店頭）／一番くじONLINE ほか（詳細な取扱店舗は要確認）",
     period:"店頭2026年10月24日発売予定、一番くじONLINEは10月26日(月)11:00〜予定",
     periodStart:"2026-10-24",
-    status:"open", statusText:"発売中（店頭本日10/24〜、オンラインは10/26〜予定）",
+    status:"open", statusText:"発売中（店頭10/24〜、オンラインは10/26〜予定）",
     lotteryPrice:850,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"中（複数の独立ニュースサイトで10/24発売予定の一致を確認。本セッションのネットワーク制限により1kuji.com本文・実際の発売開始事実は直接確認できず）",
@@ -2809,7 +2810,7 @@ const ITEMS = [
     store:"一番くじ公式ショップ（店頭販売のみ。セブン‐イレブン・イトーヨーカドー等。一番くじONLINEでの取り扱いは未確認）",
     period:"2026年10月10日(土)発売",
     periodStart:"2026-10-10",
-    status:"open", statusText:"発売中（本日10/10発売開始）",
+    status:"open", statusText:"発売中（10/10発売開始）",
     lotteryPrice:790,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"高（PR TIMES公式リリース・HOBBY Watch・GAME Watch・ファミ通の複数ソースで価格790円・本日発売開始が一致。850円との表記は別記事の誤記と判断）",
@@ -3515,7 +3516,7 @@ const ITEMS = [
     store:"一番くじ公式ショップ（店頭）／一番くじONLINE",
     period:"2026年10月24日(土)より店頭順次発売予定（オンラインは10月28日(水)11:00〜）",
     periodStart:"2026-10-24",
-    status:"open", statusText:"発売中（店頭本日10/24〜、オンラインは10/28〜予定）",
+    status:"open", statusText:"発売中（店頭10/24〜、オンラインは10/28〜予定）",
     lotteryPrice:750,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"高（inside-games・dengekionline・denfaminicogamer一致）",
@@ -3691,7 +3692,7 @@ const ITEMS = [
     store:"ファミリーマート／一番くじ公式ショップ（店頭）／一番くじONLINE ほか",
     period:"店頭10月24日(土)発売、オンラインは10月28日(水)11:00発売予定",
     periodStart:"2026-10-24",
-    status:"open", statusText:"発売中（店頭本日10/24〜、オンラインは10/28〜予定）",
+    status:"open", statusText:"発売中（店頭10/24〜、オンラインは10/28〜予定）",
     lotteryPrice:750,
     resaleLow:null, resaleHigh:null,
     dataStatus:"insufficient", confidence:"高（premium.gamepedia.jp・電撃オンライン等複数独立メディアで価格・賞品ラインナップが一致）",
