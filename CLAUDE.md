@@ -62,8 +62,9 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 - `pokemon-card.com`（ポケモンカード公式）
 - `p-bandai.jp`（プレミアムバンダイ。`onepiece`/`dragonball`カテゴリの恒久調査ルール対象）
 - `premium.gamepedia.jp`
+- `livepocket.jp`（LivePocket。2026年11月4日の自動実行で新たに確認。`livepocket`カテゴリの個別抽選ページ直接確認に支障）
 
-2026年10月7日・10月12日・10月28日の自動実行で同様の制限が確認されており、一時的な障害ではなく環境設定に起因する**継続中の問題**と判断できる。解消にはクラウド環境の「Network access」設定（環境メニュー→Edit→Allowed domainsに上記ドメインを追加、またはアクセスレベルを広げる）をユーザー側で変更する必要がある。詳細: https://code.claude.com/docs/en/cloud-environments#network-access
+2026年10月7日・10月12日・10月28日・11月4日の自動実行で同様の制限が確認されており、一時的な障害ではなく環境設定に起因する**継続中の問題**と判断できる。解消にはクラウド環境の「Network access」設定（環境メニュー→Edit→Allowed domainsに上記ドメインを追加、またはアクセスレベルを広げる）をユーザー側で変更する必要がある。詳細: https://code.claude.com/docs/en/cloud-environments#network-access
 
 なお`pokemon-card.com`がブロックされている影響で、pokemonカテゴリは2026年10月上旬以降新規項目の追加が止まっている（WebSearch経由では新規抽選情報を十分に確認できないため）。環境のネットワーク許可が改善されない限りこの状態が続く可能性がある。
 
